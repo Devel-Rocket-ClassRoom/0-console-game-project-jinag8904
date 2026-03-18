@@ -11,6 +11,7 @@ class PacMan : GameObject
     private float _moveTimer;
 
     public bool Alive { get; private set; } = true;
+    public bool PowerMode { get; private set; } = false;
 
     public (int x, int y) Position;
 
@@ -78,21 +79,38 @@ class PacMan : GameObject
         if (!MapManager.MapTile[finalPos.y, finalPos.x].HasFlag(Tile.Wall))
         {
             MapManager.MapTile[Position.y, Position.x] &= ~Tile.PacMan; // 원래 위치에서 팩맨 플래그 제거
-            Position = finalPos;    // 좌표 갱신
+            Position = finalPos;                                        // 좌표 갱신
+            MapManager.MapTile[Position.y, Position.x] |= Tile.PacMan;  // 새 위치에 팩맨 플래그 설정
 
-            if (MapManager.MapTile[Position.y, Position.x].HasFlag(Tile.Candy))
+            if (MapManager.MapTile[Position.y, Position.x].HasFlag(Tile.Pellet)) // 펠렛
             {
-                MapManager.MapTile[Position.y, Position.x] &= ~Tile.Candy;
+                MapManager.MapTile[Position.y, Position.x] &= ~Tile.Pellet;
                 GameScene.score += 10;
                 GameScene.scoreText = GameScene.score.ToString();
             }
 
-            MapManager.MapTile[Position.y, Position.x] |= Tile.PacMan; // 새 위치에 팩맨 플래그 설정
-        }
+            else if (MapManager.MapTile[Position.y, Position.x].HasFlag(Tile.PowerPellet)) // 파워 펠렛
+            {
+                MapManager.MapTile[Position.y, Position.x] &= ~Tile.PowerPellet;
+                GameScene.score += 50;
+                GameScene.scoreText = GameScene.score.ToString();
 
-        if (MapManager.MapTile[Position.y, Position.x].HasFlag(Tile.Ghost))
-        {
-            Alive = false;
+                PowerMode = true;
+            }
+
+            if (MapManager.MapTile[Position.y, Position.x].HasFlag(Tile.Ghost)) // 고스트
+            {
+                if (PowerMode)
+                {
+                    // 효과 지속 시간 동안 고스트 연속 공격 시 차례로 200, 400, 800, 1600점 획득.
+                    // 고스트 캡쳐 카운트 변수, 효과 끝나면 초기화 필요
+                }
+
+                else
+                {
+                    Alive = false;
+                }
+            }
         }
     }
 

@@ -47,8 +47,12 @@ class GameScene : Scene
             return;
         }
 
-        // 사탕을 먹은 경우 점수+, 타일맵에서 사탕 없어짐
-        //if (pacMan.Position == )
+        if (pacMan.PowerMode)
+        {
+            // 일정 시간 동안~
+
+                // 유령은 겁먹음 모드
+        }
 
         // 파워사탕을 먹은 경우, 팩맨은 각성, 유령은 도망
     }
