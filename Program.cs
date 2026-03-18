@@ -1,3 +1,1 @@
-// new SnakeGame().Run();
-
-// new 
+new PacManGame().Run();
