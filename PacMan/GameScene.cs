@@ -16,7 +16,7 @@ class GameScene : Scene
         score = 0;
         isGameOver = false;
 
-
+        CreateWalls();
     }
 
     public override void Unload()
@@ -46,5 +46,36 @@ class GameScene : Scene
             buffer.WriteTextCentered(15, "GAME OVER", ConsoleColor.Red);
             buffer.WriteTextCentered(17, "Press ENTER to Retry", ConsoleColor.White);
         }
+    }
+
+    void CreateWalls() // 벽 생성
+    {
+        int VerticalMiddle = (Wall.Top + Wall.Bottom) / 2;
+        int HorizonMiddle = (Wall.Left + Wall.Right) / 2;
+
+        // 맨 위, 아래 - 얇은 벽
+        for (int x = Wall.Left; x <= Wall.Right; x++)
+        {
+            walls.Add(new Wall(this, (x, Wall.Top)));
+            walls.Add(new Wall(this, (x, Wall.Bottom)));
+        }
+
+        // 반 갈라서 한 쪽 만들고 X 반전해서 한 번 반복하면 될듯?
+
+        for (int y = Wall.Top +1; y < VerticalMiddle -5; y++)
+        {
+            walls.Add(new Wall(this, (Wall.Left, y)));
+            walls.Add(new Wall(this, (Wall.Right, y)));
+        }
+
+        for (int y = Wall.Bottom -1; y > VerticalMiddle +5; y--)
+        {
+            walls.Add(new Wall(this, (Wall.Left, y)));
+            walls.Add(new Wall(this, (Wall.Right, y)));
+        }
+
+
+        
+
     }
 }

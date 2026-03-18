@@ -4,6 +4,11 @@ using System.Collections.Generic;
 
 public class Wall : GameObject
 {
+    public const int Left = 0;
+    public const int Top = 3;
+    public const int Right = 27;
+    public const int Bottom = 33;
+
     readonly (int x, int y) Position;
     
     public Wall(Scene scene, (int x, int y) position) : base(scene)
