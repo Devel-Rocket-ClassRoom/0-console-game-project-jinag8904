@@ -18,8 +18,8 @@ public class TitleScene : Scene
 
     public override void Draw(ScreenBuffer buffer)
     {
-        buffer.WriteTextCentered(10, "PUSH ENTER BUTTON", ConsoleColor.Yellow);
-        buffer.WriteTextCentered(12, "1 PLAYER ONLY", ConsoleColor.Blue);
-        buffer.WriteTextCentered(14, "ESC: QUIT");
+        buffer.WriteTextCentered(14, "PUSH ENTER BUTTON", ConsoleColor.Yellow);
+        buffer.WriteTextCentered(16, "1 PLAYER ONLY", ConsoleColor.Blue);
+        buffer.WriteTextCentered(18, "ESC: QUIT");
     }
 }

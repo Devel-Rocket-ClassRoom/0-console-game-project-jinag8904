@@ -1,8 +1,6 @@
 ﻿using System;
 using Framework.Engine;
 
-public enum Tile { Wall, Dot, PowerPellet, Empty, GhostGate }
-
 public class MapManager : GameObject
 {
     public const int Left = 0;
@@ -35,7 +33,7 @@ public class MapManager : GameObject
         "#............##............#",
         "#.####.#####.##.#####.####.#",
         "#.####.#####.##.#####.####.#",
-        "#O..##................##..O#",
+        "#O..##.......  .......##..O#",
         "###.##.##.########.##.##.###",
         "###.##.##.########.##.##.###",
         "#......##....##....##......#",
@@ -44,7 +42,8 @@ public class MapManager : GameObject
         "#..........................#",
         "############################"
     };
-    public Tile[,] MapTile = new Tile[31, 28];
+
+    public static Tile[,] MapTile = new Tile[31, 28];
 
     public MapManager(Scene scene) : base(scene)
     {
@@ -57,9 +56,8 @@ public class MapManager : GameObject
                 MapTile[y, x] = tile switch
                 {
                     '#' => Tile.Wall,
-                    '.' => Tile.Dot,
-                    'O' => Tile.PowerPellet,
-                    'G' => Tile.GhostGate,
+                    '.' => Tile.Candy,
+                    'O' => Tile.PowerCandy,
                     _ => Tile.Empty
                 };
             }
@@ -73,35 +71,48 @@ public class MapManager : GameObject
             for (int x = 0; x < MapTile.GetLength(1); x++)
             {
                 string s = "";
-                var color = new ConsoleColor();
+                var color = ConsoleColor.White;
 
-                switch (MapTile[y, x])
+                var currentTile = MapTile[y, x];
+
+                if (currentTile.HasFlag(Tile.PacMan))
                 {
-                    case Tile.Wall:
-                        s = "▣";
-                        color = ConsoleColor.Blue;
-                        break;
-                    case Tile.Dot:
-                        s = "○";
-                        color = ConsoleColor.White;
-                        break;
-                    case Tile.PowerPellet:
-                        s = "◎";
-                        color = ConsoleColor.White;
-                        break;
-                    case Tile.GhostGate:
-                        s = "￣";
-                        color = ConsoleColor.White;
-                        break;
-                    default:
-                        s = "ㅤ";
-                        break;
+                    continue;   // 팩맨은 팩맨 클래스에서 그리므로 패스
                 }
 
-                buffer.WriteText(x +Left, y +Top, s, color);
+                if (currentTile.HasFlag(Tile.Wall))
+                {
+                    s = "▣";
+                    color = ConsoleColor.Blue;
+                }
+                else if (currentTile.HasFlag(Tile.PowerCandy))
+                {
+                    s = "◎";
+                }
+                else if (currentTile.HasFlag(Tile.Candy))
+                {
+                    s = "○";
+                }
+                else
+                {
+                    s = "ㅤ";
+                }
+
+                buffer.WriteText(x + Left, y + Top, s, color);
             }
         }
     }
 
     public override void Update(float deltaTime) { }
+}
+
+[Flags]
+public enum Tile
+{
+    Empty = 0,
+    Wall = 1,
+    Candy = 1 << 1,
+    PowerCandy = 1 << 2,
+    Ghost = 1 << 3,
+    PacMan = 1 << 4
 }
