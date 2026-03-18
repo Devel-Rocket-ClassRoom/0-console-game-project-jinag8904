@@ -65,13 +65,11 @@ class GameScene : Scene
         for (int y = Wall.Top +1; y < VerticalMiddle -5; y++)
         {
             walls.Add(new Wall(this, (Wall.Left, y)));
-            walls.Add(new Wall(this, (Wall.Right, y)));
         }
 
         for (int y = Wall.Bottom -1; y > VerticalMiddle +5; y--)
         {
             walls.Add(new Wall(this, (Wall.Left, y)));
-            walls.Add(new Wall(this, (Wall.Right, y)));
         }
 
 
