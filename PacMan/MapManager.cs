@@ -22,7 +22,7 @@ public class MapManager : GameObject
         "######.##### ## #####.######",
         "     #.##### ## #####.#     ",
         "     #.##          ##.#     ",
-        "     #.## ######## ##.#     ",
+        "     #.## ###GG### ##.#     ",
         "######.## #      # ##.######",
         "      .   #      #   .      ",
         "######.## #      # ##.######",
@@ -58,6 +58,7 @@ public class MapManager : GameObject
                     '#' => Tile.Wall,
                     '.' => Tile.Candy,
                     'O' => Tile.PowerCandy,
+                    'G' => Tile.GhostHouse,
                     _ => Tile.Empty
                 };
             }
@@ -82,16 +83,20 @@ public class MapManager : GameObject
 
                 if (currentTile.HasFlag(Tile.Wall))
                 {
-                    s = "▣";
+                    s = "■";
                     color = ConsoleColor.Blue;
                 }
                 else if (currentTile.HasFlag(Tile.PowerCandy))
                 {
-                    s = "◎";
+                    s = "●";
                 }
                 else if (currentTile.HasFlag(Tile.Candy))
                 {
-                    s = "○";
+                    s = "ㆍ";
+                }
+                else if (currentTile.HasFlag(Tile.GhostHouse))
+                {
+                    s = "〓";
                 }
                 else
                 {
@@ -110,9 +115,10 @@ public class MapManager : GameObject
 public enum Tile
 {
     Empty = 0,
-    Wall = 1,
-    Candy = 1 << 1,
-    PowerCandy = 1 << 2,
-    Ghost = 1 << 3,
-    PacMan = 1 << 4
+    Wall = 1 << 0,
+    GhostHouse = 1 << 1,
+    Candy = 1 << 2,
+    PowerCandy = 1 << 3,
+    Ghost = 1 << 4,
+    PacMan = 1 << 5
 }
