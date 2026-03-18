@@ -5,7 +5,7 @@ public class PacManGame : GameApp
 {
     private readonly SceneManager<Scene> _scenes = new();
 
-    public PacManGame() : base(34, 30) { }
+    public PacManGame() : base(60, 40) { }
     public PacManGame(int width, int height) : base(width, height) { }
 
     protected override void Initialize()
@@ -32,14 +32,14 @@ public class PacManGame : GameApp
     private void ChangeToTitle()
     {
         var title = new TitleScene();
-        //title.StartRequested += ChangeToPlay;
+        title.StartRequested += ChangeToPlay;
         _scenes.ChangeScene(title);
     }
 
-/*    private void ChangeToPlay()
+    private void ChangeToPlay()
     {
-        var play = new PlayScene();
+        var play = new GameScene();
         play.PlayAgainRequested += ChangeToTitle;
         _scenes.ChangeScene(play);
-    }*/
+    }
 }
