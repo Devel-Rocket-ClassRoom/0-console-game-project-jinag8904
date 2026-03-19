@@ -27,7 +27,6 @@ class Ghost : GameObject
     public override void Update(float deltaTime)
     {
         _moveTimer += deltaTime;
-        SetNextMove(PacMan.Position, PacMan.direction);
 
         if (_moveTimer > currentMoveInterval)
         {
@@ -85,14 +84,33 @@ class RedGhost : Ghost
 
     public override void Update(float deltaTime)
     {
+        SetNextMove(PacMan.Position, PacMan.direction);
         base.Update(deltaTime);
     }
 
-    public override void SetNextMove((int x, int y) targetPos, (int x, int y) pacManDir)   // 경로 탐색, 방향 설정 (팩맨 위치 변할 때마다 재설정)
+    public override void SetNextMove((int x, int y) pacManPos, (int x, int y) pacManDir)   // 경로 탐색, 방향 설정 (팩맨 위치 변할 때마다 재설정)
     {
+        var targetPos = (x: 0, y: 0);
+
+        // goingHome인 경우에는 집으로 간다
+        if (goingHome)
+        {
+            // 이미 집에 있으면 goingHome 해제, 속도 변경
+            
+            // 가는 도중이면... targetPos는 집
+        }
+
         // frightened인 경우에는 팩맨으로부터 도망친다
-        // goingHome인 경우에는 집으로 간다 (빠르게)
-            // 집에 있으면 goingHome 해제, 속도 변경
+        else if (frightened)
+        {
+            // targetPos는 팩맨의 반대 방향?
+        }
+
+        else
+        {
+            // 팩맨을 쫓는다
+            targetPos = pacManPos;
+        }
 
         double minDistance = double.MaxValue;
         (int nextX, int nextY) bestMove = (Position.x, Position.y);
