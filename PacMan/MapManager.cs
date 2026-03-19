@@ -76,11 +76,9 @@ public class MapManager : GameObject
 
                 var currentTile = MapTile[y, x];
 
-                if (currentTile.HasFlag(Tile.PacMan))
-                {
-                    continue;   // 팩맨은 팩맨 클래스에서 그리므로 패스
-                }
-
+                if (currentTile.HasFlag(Tile.PacMan))   continue;   // 팩맨, 유령은 팩맨 클래스에서 그리므로 패스
+                if (currentTile.HasFlag(Tile.Ghost))    continue;
+                
                 if (currentTile.HasFlag(Tile.Wall))
                 {
                     s = "■";
@@ -98,7 +96,7 @@ public class MapManager : GameObject
                 {
                     s = "〓";
                 }
-                else if (currentTile.HasFlag(Tile.Empty))
+                else
                 {
                     s = "ㅤ";
                 }
@@ -115,10 +113,10 @@ public class MapManager : GameObject
 public enum Tile
 {
     Empty       = 0,
-    Wall        = 1 << 1,
-    GhostHouse  = 1 << 2,
-    Pellet      = 1 << 3,
-    PowerPellet = 1 << 4,
-    Ghost       = 1 << 5,
-    PacMan      = 1 << 6
+    Wall        = 1 << 0,
+    GhostHouse  = 1 << 1,
+    Pellet      = 1 << 2,
+    PowerPellet = 1 << 3,
+    Ghost       = 1 << 4,
+    PacMan      = 1 << 5
 }

@@ -87,8 +87,21 @@ class PacMan : GameObject
                 if (!AtePowerPellet) Alive = false;
             }
 
+            else if (MapManager.MapTile[Position.y, Position.x].HasFlag(Tile.Pellet))
+            {
+                MapManager.MapTile[Position.y, Position.x] &= ~Tile.Pellet;
+                GameScene.score += 10;
+                GameScene.scoreText = GameScene.score.ToString();
+            }
+
             else if (MapManager.MapTile[Position.y, Position.x].HasFlag(Tile.PowerPellet)) // 파워 펠렛
             {
+                MapManager.MapTile[Position.y, Position.x] &= ~Tile.PowerPellet;
+                GameScene.score += 50;
+                GameScene.scoreText = GameScene.score.ToString();
+
+                GameScene.fightenedModeTimer = 0;
+
                 AtePowerPellet = true;
             }
         }

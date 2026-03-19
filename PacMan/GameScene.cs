@@ -1,7 +1,5 @@
 ﻿using Framework.Engine;
 using System;
-using System.Collections.Generic;
-using System.Xml.Linq;
 
 class GameScene : Scene
 {
@@ -10,7 +8,7 @@ class GameScene : Scene
     public static int ghostCapturedCount = 0;
 
     private const float k_FrightenedModeDuration = 10f;
-    private float _fightenedModeTimer;
+    public static float fightenedModeTimer;
 
     private bool isGameOver;
     public bool powerEventOn = false;
@@ -29,7 +27,7 @@ class GameScene : Scene
         scoreText = "00";
         ghostCapturedCount = 0;
 
-        _fightenedModeTimer = 0;
+        fightenedModeTimer = 0;
 
         isGameOver = false;
         powerEventOn = false;
@@ -71,31 +69,15 @@ class GameScene : Scene
 
         if (powerEventOn)
         {
-            _fightenedModeTimer += deltaTime;
+            fightenedModeTimer += deltaTime;
 
-            if (_fightenedModeTimer > k_FrightenedModeDuration)
+            if (fightenedModeTimer > k_FrightenedModeDuration)
             {
                 OffFrightenedMode?.Invoke();
                 powerEventOn = false;
-                _fightenedModeTimer = 0f;
+                fightenedModeTimer = 0f;
                 ghostCapturedCount = 0;
             }
-        }
-
-        if (MapManager.MapTile[pacMan.Position.y, pacMan.Position.x].HasFlag(Tile.Pellet))
-        {
-            MapManager.MapTile[pacMan.Position.y, pacMan.Position.x] &= ~Tile.Pellet;
-            score += 10;
-            scoreText = score.ToString();
-        }
-
-        else if (MapManager.MapTile[pacMan.Position.y, pacMan.Position.x].HasFlag(Tile.PowerPellet)) // 파워 펠렛
-        {
-            MapManager.MapTile[pacMan.Position.y, pacMan.Position.x] &= ~Tile.PowerPellet;
-            score += 50;
-            scoreText = score.ToString();
-
-            _fightenedModeTimer = 0;
         }
 
         if (MapManager.MapTile[pacMan.Position.y, pacMan.Position.x].HasFlag(Tile.Ghost)) // 고스트
