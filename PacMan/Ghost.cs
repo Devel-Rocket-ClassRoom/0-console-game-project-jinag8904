@@ -8,6 +8,11 @@ class Ghost : GameObject
     public (int x, int y) Position;
 
     private const float k_MoveInterval = 0.3f;
+    private const float k_FrightenedMoveInterval = 0.5f;
+    private const float k_GoingHomeMoveInterval = 0.2f;
+
+    private float currentMoveInterval;
+
     protected (int x, int y) _nextDirection;
     private float _moveTimer;
 
@@ -16,7 +21,7 @@ class Ghost : GameObject
 
     protected Ghost(Scene scene) : base(scene)
     {
-        
+        currentMoveInterval = k_MoveInterval;
     }
 
     public override void Update(float deltaTime)
@@ -24,7 +29,7 @@ class Ghost : GameObject
         _moveTimer += deltaTime;
         SetNextMove(PacMan.Position, PacMan.direction);
 
-        if (_moveTimer > k_MoveInterval)
+        if (_moveTimer > currentMoveInterval)
         {
             Move();
             _moveTimer = 0f;
@@ -38,23 +43,33 @@ class Ghost : GameObject
     public virtual void Move()
     {
         Position = (x: Position.x + _nextDirection.x, y: Position.y + _nextDirection.y);
-        if (IsHit()) GameScene.isGameOver = true;
+        if (IsHit() && !frightened) GameScene.isGameOver = true;
     }
 
     public bool IsHit() => MapManager.MapTile[Position.y, Position.x] == Tile.PacMan;
 
-    public virtual void FrightenedOn() => frightened = true;
-    public virtual void FrightenedOff() => frightened = false;
+    public virtual void FrightenedOn()
+    {
+        frightened = true;
+        currentMoveInterval = k_FrightenedMoveInterval;
+    }
+    public virtual void FrightenedOff()
+    {
+        frightened = false;
+        currentMoveInterval = k_MoveInterval;
+    }
 
-    public override void Draw(ScreenBuffer buffer) => buffer.SetCell(Position.x + MapManager.Left, Position.y + MapManager.Top, '∩');
-    
+    public virtual void GoingHomeOn()
+    {
+        goingHome = true;
+        currentMoveInterval = k_GoingHomeMoveInterval;
+    }
+
+    public override void Draw(ScreenBuffer buffer) => buffer.SetCell(Position.x + MapManager.Left, Position.y + MapManager.Top, '∩');    
 }
 
 class RedGhost : Ghost
 {
-    public static bool frightened;
-    public static bool goingHome;
-
     public RedGhost(Scene scene) : base(scene)
     {
         Name = "Red";
@@ -65,6 +80,7 @@ class RedGhost : Ghost
         MapManager.MapTile[11, 14] |= Tile.RedGhost;
 
         GameScene.OnFrightenedMode += FrightenedOn;
+        GameScene.OffFrightenedMode += FrightenedOff;
     }
 
     public override void Update(float deltaTime)
@@ -74,6 +90,10 @@ class RedGhost : Ghost
 
     public override void SetNextMove((int x, int y) pacManPos, (int x, int y) pacManDir)   // 경로 탐색, 방향 설정 (팩맨 위치 변할 때마다 재설정)
     {
+        // frightened인 경우에는 팩맨으로부터 도망친다
+        // goingHome인 경우에는 집으로 간다 (빠르게)
+            // 집에 있으면 goingHome 해제, 속도 변경
+
         double minDistance = double.MaxValue;
         (int nextX, int nextY) bestMove = (Position.x, Position.y);
 
@@ -106,9 +126,40 @@ class RedGhost : Ghost
         MapManager.MapTile[Position.y, Position.x] |= Tile.RedGhost;  // 새 위치에 플래그 설정
     }
 
+    public override void FrightenedOn()
+    {
+        base.FrightenedOn();
+    }
+
+    public override void FrightenedOff()
+    {
+        base.FrightenedOff();
+    }
+
+    public override void GoingHomeOn()
+    {
+        base.GoingHomeOn();
+    }
+
     public override void Draw(ScreenBuffer buffer)
     {
-        buffer.SetCell(Position.x + MapManager.Left, Position.y + MapManager.Top, '∩', ConsoleColor.Red);
+        // '∩'
+        char c = '유';
+        var color = ConsoleColor.Red;
+
+        if (frightened)
+        {
+            c = '튀';
+            color = ConsoleColor.Blue;
+        }
+
+        if (goingHome)
+        {
+            c = 'ㅎ';
+            color = ConsoleColor.White;
+        }
+
+        buffer.SetCell(Position.x + MapManager.Left, Position.y + MapManager.Top, c, color);
     }
 }
 

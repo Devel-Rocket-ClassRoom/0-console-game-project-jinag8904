@@ -93,20 +93,20 @@ class GameScene : Scene
 
         Tile tile = MapManager.MapTile[PacMan.Position.y, PacMan.Position.x];
 
-        if (tile == (Tile.RedGhost | Tile.PinkGhost | Tile.OrangeGhost | Tile.MintGhost))
+        if ((tile & (Tile.RedGhost | Tile.PinkGhost | Tile.OrangeGhost | Tile.MintGhost)) != 0)
         {
             switch (tile)
             {
                 case Tile.RedGhost:
-                    if (RedGhost.frightened && !RedGhost.goingHome)
+                    if (ghosts[0].frightened && !ghosts[0].goingHome)
                     {
                         ghostCapturedCount++;
-                        RedGhost.goingHome = true;
+                        ghosts[0].GoingHomeOn();
                     }
 
-                    else if (RedGhost.goingHome)
+                    else if (ghosts[0].goingHome)
                     {
-                
+                        // 아무것도 하지 않음
                     }
 
                     else

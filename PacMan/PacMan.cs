@@ -43,23 +43,11 @@ class PacMan : GameObject
     {
         (int x, int y) desired = _nextDirection;
 
-        if (Input.IsKeyDown(ConsoleKey.UpArrow))
-        {
-            desired = (0, -1);
-        }
-        else if (Input.IsKeyDown(ConsoleKey.DownArrow))
-        {
-            desired = (0, 1);
-        }
-        else if (Input.IsKeyDown(ConsoleKey.LeftArrow))
-        {
-            desired = (-1, 0);
-        }
-        else if (Input.IsKeyDown(ConsoleKey.RightArrow))
-        {
-            desired = (1, 0);
-        }
-
+        if (Input.IsKeyDown(ConsoleKey.UpArrow))            desired = (0, -1);        
+        else if (Input.IsKeyDown(ConsoleKey.DownArrow))     desired = (0, 1);
+        else if (Input.IsKeyDown(ConsoleKey.LeftArrow))     desired = (-1, 0);        
+        else if (Input.IsKeyDown(ConsoleKey.RightArrow))    desired = (1, 0);
+        
         _nextDirection = desired;
     }
 
@@ -89,35 +77,35 @@ class PacMan : GameObject
             MapManager.MapTile[Position.y, Position.x] &= ~Tile.PacMan; // 원래 위치에서 팩맨 플래그 제거
             Position = finalPos;                                        // 좌표 갱신
             MapManager.MapTile[Position.y, Position.x] |= Tile.PacMan;  // 새 위치에 팩맨 플래그 설정
+        }
 
-            if (finalTile.HasFlag(Tile.RedGhost))
-            {
-                Alive = false;
-            }
+        Eat(finalTile);
+    }
 
-            if (finalTile.HasFlag(Tile.Pellet)) // 펠렛
-            {
-                MapManager.MapTile[Position.y, Position.x] &= ~Tile.Pellet;
-                GameScene.score += 10;
-                GameScene.scoreText = GameScene.score.ToString();
-            }
+    public void Eat(Tile tile)
+    {
+        if (tile.HasFlag(Tile.Pellet)) // 펠렛
+        {
+            MapManager.MapTile[Position.y, Position.x] &= ~Tile.Pellet;
+            GameScene.score += 10;
+            GameScene.scoreText = GameScene.score.ToString();
+        }
 
-            else if (finalTile.HasFlag(Tile.PowerPellet)) // 파워 펠렛
-            {
-                MapManager.MapTile[Position.y, Position.x] &= ~Tile.PowerPellet;
-                GameScene.score += 50;
-                GameScene.scoreText = GameScene.score.ToString();
+        else if (tile.HasFlag(Tile.PowerPellet)) // 파워 펠렛
+        {
+            MapManager.MapTile[Position.y, Position.x] &= ~Tile.PowerPellet;
+            GameScene.score += 50;
+            GameScene.scoreText = GameScene.score.ToString();
 
-                GameScene.fightenedModeTimer = 0;
+            GameScene.fightenedModeTimer = 0;
 
-                AtePowerPellet = true;
-            }
+            AtePowerPellet = true;
         }
     }
 
     public override void Draw(ScreenBuffer buffer)
     {
-        var c = ' ';
+/*        var c = ' ';
 
         switch (direction)
         {
@@ -133,8 +121,8 @@ class PacMan : GameObject
             case (0, -1):
                 c = '▲';
                 break;
-        }
+        }*/
 
-        buffer.SetCell(Position.x +MapManager.Left, Position.y +MapManager.Top, c, ConsoleColor.Yellow);
+        buffer.SetCell(Position.x +MapManager.Left, Position.y +MapManager.Top, '팩', ConsoleColor.Yellow);
     }
 }
