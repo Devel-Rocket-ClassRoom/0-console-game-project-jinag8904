@@ -3,10 +3,10 @@ using System;
 
 class PacMan : GameObject
 {
-    public (int x, int y) Position;
+    public static (int x, int y) Position;
 
-    private const float k_MoveInterval = 0.15f;
-    public (int x, int y) direction;
+    private const float k_MoveInterval = 0.4f;
+    public static (int x, int y) direction;
     private (int x, int y) _nextDirection;
     private float _moveTimer;
 
@@ -66,6 +66,10 @@ class PacMan : GameObject
     private void Move()
     {
         var nextStep = (x: Position.x + _nextDirection.x, y: Position.y + _nextDirection.y);    // 다음 방향
+
+        if (nextStep.x < 0) nextStep.x = 27;
+        else if (nextStep.x > 27) nextStep.x = 0;
+
         Tile nextStepTile = MapManager.MapTile[nextStep.y, nextStep.x];
 
         if (!nextStepTile.HasFlag(Tile.Wall) && !nextStepTile.HasFlag(Tile.GhostHouse))
@@ -74,13 +78,14 @@ class PacMan : GameObject
         }
 
         var finalPos = (x: Position.x + direction.x, y: Position.y + direction.y);    // 다음 위치
+
+        if (finalPos.x < 0) finalPos.x = 27;
+        else if (finalPos.x > 27) finalPos.x = 0;
+
         Tile finalTile = MapManager.MapTile[finalPos.y, finalPos.x];
 
         if (!finalTile.HasFlag(Tile.Wall) && !finalTile.HasFlag(Tile.GhostHouse))
         {
-            if (finalPos.x < 0) finalPos.x = 27;
-            else if (finalPos.x > 27) finalPos.x = 0;
-
             MapManager.MapTile[Position.y, Position.x] &= ~Tile.PacMan; // 원래 위치에서 팩맨 플래그 제거
             Position = finalPos;                                        // 좌표 갱신
             MapManager.MapTile[Position.y, Position.x] |= Tile.PacMan;  // 새 위치에 팩맨 플래그 설정

@@ -11,7 +11,7 @@ class GameScene : Scene
     private const float k_FrightenedModeDuration = 10f;
     public static float fightenedModeTimer;
 
-    private bool isGameOver;
+    public static  bool isGameOver;
     public bool powerEventOn = false;
 
     MapManager map;
@@ -64,11 +64,6 @@ class GameScene : Scene
             return;
         }
 
-        foreach (var ghost in ghosts)
-        {
-            ghost.SetNextMove(pacMan.Position, pacMan.direction);
-        }
-
         if (pacMan.AtePowerPellet)
         {
             pacMan.AtePowerPellet = false;
@@ -84,7 +79,6 @@ class GameScene : Scene
             {
                 OffFrightenedMode?.Invoke();
                 powerEventOn = false;
-                fightenedModeTimer = 0f;
                 ghostCapturedCount = 0;
             }
         }
@@ -97,7 +91,7 @@ class GameScene : Scene
             return;
         }
 
-        Tile tile = MapManager.MapTile[pacMan.Position.y, pacMan.Position.x];
+        Tile tile = MapManager.MapTile[PacMan.Position.y, PacMan.Position.x];
 
         if (tile == (Tile.RedGhost | Tile.PinkGhost | Tile.OrangeGhost | Tile.MintGhost))
         {

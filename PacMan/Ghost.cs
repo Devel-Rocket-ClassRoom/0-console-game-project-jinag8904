@@ -7,8 +7,8 @@ class Ghost : GameObject
 
     public (int x, int y) Position;
 
-    private const float k_MoveInterval = 0.13f;
-    private (int x, int y) _nextDirection;
+    private const float k_MoveInterval = 0.3f;
+    protected (int x, int y) _nextDirection;
     private float _moveTimer;
 
     public bool frightened;
@@ -22,6 +22,7 @@ class Ghost : GameObject
     public override void Update(float deltaTime)
     {
         _moveTimer += deltaTime;
+        SetNextMove(PacMan.Position, PacMan.direction);
 
         if (_moveTimer > k_MoveInterval)
         {
@@ -37,12 +38,13 @@ class Ghost : GameObject
     public virtual void Move()
     {
         Position = (x: Position.x + _nextDirection.x, y: Position.y + _nextDirection.y);
+        if (IsHit()) GameScene.isGameOver = true;
     }
 
     public bool IsHit() => MapManager.MapTile[Position.y, Position.x] == Tile.PacMan;
 
-    public void FrightenedOn() => frightened = true;
-    public void FrightenedOff() => frightened = false;
+    public virtual void FrightenedOn() => frightened = true;
+    public virtual void FrightenedOff() => frightened = false;
 
     public override void Draw(ScreenBuffer buffer) => buffer.SetCell(Position.x + MapManager.Left, Position.y + MapManager.Top, '∩');
     
@@ -52,8 +54,6 @@ class RedGhost : Ghost
 {
     public static bool frightened;
     public static bool goingHome;
-
-    private (int x, int y) _nextDirection;
 
     public RedGhost(Scene scene) : base(scene)
     {
@@ -67,6 +67,11 @@ class RedGhost : Ghost
         GameScene.OnFrightenedMode += FrightenedOn;
     }
 
+    public override void Update(float deltaTime)
+    {
+        base.Update(deltaTime);
+    }
+
     public override void SetNextMove((int x, int y) pacManPos, (int x, int y) pacManDir)   // 경로 탐색, 방향 설정 (팩맨 위치 변할 때마다 재설정)
     {
         double minDistance = double.MaxValue;
@@ -78,7 +83,7 @@ class RedGhost : Ghost
             int testY = Position.y + dir.y;
 
             // 1. 벽 체크 (벽이 아닐 때만 후보로 등록)
-            if (!MapManager.MapTile[testY, testX].HasFlag(Tile.Wall))
+            if (!(MapManager.MapTile[testY, testX].HasFlag(Tile.Wall)) && !(MapManager.MapTile[testY, testX].HasFlag(Tile.GhostHouse)))
             {
                 // 2. 타겟(팩맨)까지의 거리 계산 (피타고라스 정리: a^2 + b^2)
                 double dist = Math.Pow(pacManPos.x - testX, 2) + Math.Pow(pacManPos.y - testY, 2);
@@ -91,13 +96,13 @@ class RedGhost : Ghost
             }
         }
 
-        _nextDirection = bestMove;
+        _nextDirection = (bestMove.nextX - Position.x, bestMove.nextY - Position.y);
     }
 
     public override void Move()
     {
-        base.Move();
         MapManager.MapTile[Position.y, Position.x] &= ~Tile.RedGhost; // 원래 위치에서 플래그 제거
+        base.Move();
         MapManager.MapTile[Position.y, Position.x] |= Tile.RedGhost;  // 새 위치에 플래그 설정
     }
 
