@@ -18,10 +18,10 @@ class Ghost : GameObject
 
     protected (int x, int y) _nextDirection;
     
-    private float _moveTimer;
-    private float _frightenedTimer;
+    protected float _moveTimer;
+    protected float _frightenedTimer;
 
-    private ConsoleColor _color = ConsoleColor.Blue;
+    protected ConsoleColor _color = ConsoleColor.Blue;
 
     public bool frightened;
     public bool goingHome;
