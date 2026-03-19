@@ -1,5 +1,6 @@
 ﻿using Framework.Engine;
 using System;
+using System.Drawing;
 
 class RedGhost : Ghost
 {
@@ -84,7 +85,21 @@ class RedGhost : Ghost
     
     public override void Draw(ScreenBuffer buffer)
     {
-        // '∩'
+    /* 
+        if (_frightenedTimer > 7)
+        {
+            switch (_color)
+            {
+                case ConsoleColor.Blue:
+                    _color = ConsoleColor.White;
+                    break;
+                case ConsoleColor.White:
+                    _color = ConsoleColor.Blue;
+                    break;
+            }
+        }
+    */
+
         char c = '유';
         var color = ConsoleColor.Red;
 

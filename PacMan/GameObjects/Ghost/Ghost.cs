@@ -3,20 +3,25 @@ using System;
 
 class Ghost : GameObject
 {
-    readonly BFSHelper BFSHelper = new();
+    // readonly BFSHelper BFSHelper = new();
 
     public (int x, int y)[] directions = { (0, -1), (0, 1), (-1, 0), (1, 0) };
 
     public (int x, int y) Position;
 
-    private const float k_MoveInterval = 0.3f;
-    private const float k_FrightenedMoveInterval = 0.5f;
-    private const float k_GoingHomeMoveInterval = 0.2f;
+    protected const float k_MoveInterval = 0.3f;
+    protected const float k_FrightenedMoveInterval = 0.5f;
+    protected const float k_GoingHomeMoveInterval = 0.2f;
+    protected float currentMoveInterval;
 
-    private float currentMoveInterval;
+    protected const float k_FrightenedDuration = 10f;    
 
     protected (int x, int y) _nextDirection;
+    
     private float _moveTimer;
+    private float _frightenedTimer;
+
+    private ConsoleColor _color = ConsoleColor.Blue;
 
     public bool frightened;
     public bool goingHome;
@@ -29,11 +34,18 @@ class Ghost : GameObject
     public override void Update(float deltaTime)
     {
         _moveTimer += deltaTime;
+        _frightenedTimer += deltaTime;
 
         if (_moveTimer > currentMoveInterval)
         {
             Move();
             _moveTimer = 0f;
+        }
+
+        if (_frightenedTimer > k_FrightenedDuration)
+        {
+            FrightenedOff();
+            _frightenedTimer = 0f;
         }
     }
 
@@ -53,6 +65,7 @@ class Ghost : GameObject
     {
         frightened = true;
         currentMoveInterval = k_FrightenedMoveInterval;
+
     }
     public virtual void FrightenedOff()
     {
@@ -66,5 +79,8 @@ class Ghost : GameObject
         currentMoveInterval = k_GoingHomeMoveInterval;
     }
 
-    public override void Draw(ScreenBuffer buffer) => buffer.SetCell(Position.x + MapManager.Left, Position.y + MapManager.Top, '∩');    
+    public override void Draw(ScreenBuffer buffer)
+    {
+        buffer.SetCell(Position.x + MapManager.Left, Position.y + MapManager.Top, '∩');
+    }
 }
