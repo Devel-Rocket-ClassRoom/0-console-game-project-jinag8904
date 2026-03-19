@@ -88,7 +88,7 @@ class RedGhost : Ghost
         base.Update(deltaTime);
     }
 
-    public override void SetNextMove((int x, int y) pacManPos, (int x, int y) pacManDir)   // 경로 탐색, 방향 설정 (팩맨 위치 변할 때마다 재설정)
+    public override void SetNextMove((int x, int y) targetPos, (int x, int y) pacManDir)   // 경로 탐색, 방향 설정 (팩맨 위치 변할 때마다 재설정)
     {
         // frightened인 경우에는 팩맨으로부터 도망친다
         // goingHome인 경우에는 집으로 간다 (빠르게)
@@ -106,7 +106,7 @@ class RedGhost : Ghost
             if (!(MapManager.MapTile[testY, testX].HasFlag(Tile.Wall)) && !(MapManager.MapTile[testY, testX].HasFlag(Tile.GhostHouse)))
             {
                 // 2. 타겟(팩맨)까지의 거리 계산 (피타고라스 정리: a^2 + b^2)
-                double dist = Math.Pow(pacManPos.x - testX, 2) + Math.Pow(pacManPos.y - testY, 2);
+                double dist = Math.Pow(targetPos.x - testX, 2) + Math.Pow(targetPos.y - testY, 2);
 
                 if (dist < minDistance)
                 {

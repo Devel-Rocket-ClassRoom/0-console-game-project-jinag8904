@@ -95,29 +95,23 @@ class GameScene : Scene
 
         if ((tile & (Tile.RedGhost | Tile.PinkGhost | Tile.OrangeGhost | Tile.MintGhost)) != 0)
         {
-            switch (tile)
+            if ((tile & Tile.RedGhost) != 0)
             {
-                case Tile.RedGhost:
-                    if (ghosts[0].frightened && !ghosts[0].goingHome)
-                    {
-                        ghostCapturedCount++;
-                        ghosts[0].GoingHomeOn();
-                    }
+                if (ghosts[0].frightened && !ghosts[0].goingHome)
+                {
+                    ghostCapturedCount++;
+                    ghosts[0].GoingHomeOn();
+                }
 
-                    else if (ghosts[0].goingHome)
-                    {
-                        // 아무것도 하지 않음
-                    }
+                else if (ghosts[0].goingHome)
+                {
+                    // 아무것도 하지 않음
+                }
 
-                    else
-                    {
-                        isGameOver = true;
-                    }
-
-                    break;
-
-                default:
-                    break;
+                else
+                {
+                    isGameOver = true;
+                }
             }
 
             switch (ghostCapturedCount)
