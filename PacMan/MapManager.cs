@@ -71,26 +71,25 @@ public class MapManager : GameObject
         {
             for (int x = 0; x < MapTile.GetLength(1); x++)
             {
-                string s = "";
+                string s = "  ";
                 var color = ConsoleColor.White;
-
                 var currentTile = MapTile[y, x];
 
                 if (currentTile.HasFlag(Tile.PacMan))   continue;   // 팩맨, 유령은 팩맨 클래스에서 그리므로 패스
-                if (currentTile.HasFlag(Tile.Ghost))    continue;
+                //if (currentTile.HasFlag(Tile.Ghost))    continue;
                 
                 if (currentTile.HasFlag(Tile.Wall))
                 {
-                    s = "■";
+                    s = "田";
                     color = ConsoleColor.Blue;
+                }
+                else if (currentTile.HasFlag(Tile.PowerPellet))
+                {
+                    s = "ㅇ";
                 }
                 else if (currentTile.HasFlag(Tile.Pellet))
                 {
                     s = "ㆍ";
-                }
-                else if (currentTile.HasFlag(Tile.PowerPellet))
-                {
-                    s = "●";
                 }
                 else if (currentTile.HasFlag(Tile.GhostHouse))
                 {
@@ -101,7 +100,7 @@ public class MapManager : GameObject
                     s = "ㅤ";
                 }
 
-                buffer.WriteText(x + Left, y + Top, s, color);
+                buffer.WriteText(x +Left, y +Top, s, color);
             }
         }
     }

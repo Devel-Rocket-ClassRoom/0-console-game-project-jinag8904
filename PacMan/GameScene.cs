@@ -5,32 +5,32 @@ class GameScene : Scene
 {
     public static int score;
     public static string scoreText = "00";
-    public static int ghostCapturedCount = 0;
+    //public static int ghostCapturedCount = 0;
 
-    private const float k_FrightenedModeDuration = 10f;
-    public static float fightenedModeTimer;
+/*    private const float k_FrightenedModeDuration = 10f;
+    public static float fightenedModeTimer;*/
 
     private bool isGameOver;
-    public bool powerEventOn = false;
+    //public bool powerEventOn = false;
 
     MapManager map;
     PacMan pacMan;
 
     public event GameAction PlayAgainRequested;
 
-    public static event GameAction OnFrightenedMode;
-    public static event GameAction OffFrightenedMode;
+    //public static event GameAction OnFrightenedMode;
+    //public static event GameAction OffFrightenedMode;
 
     public override void Load()
     {
         score = 0;
         scoreText = "00";
-        ghostCapturedCount = 0;
+/*        ghostCapturedCount = 0;
 
-        fightenedModeTimer = 0;
+        fightenedModeTimer = 0;*/
 
         isGameOver = false;
-        powerEventOn = false;
+        //powerEventOn = false;
 
         map = new (this);
         AddGameObject(map);
@@ -59,7 +59,7 @@ class GameScene : Scene
             isGameOver = true;
             return;
         }
-
+/*
         if (pacMan.AtePowerPellet)
         {
             pacMan.AtePowerPellet = false;
@@ -78,11 +78,11 @@ class GameScene : Scene
                 fightenedModeTimer = 0f;
                 ghostCapturedCount = 0;
             }
-        }
+        }*/
 
-        if (MapManager.MapTile[pacMan.Position.y, pacMan.Position.x].HasFlag(Tile.Ghost)) // 고스트
+/*        if (MapManager.MapTile[pacMan.Position.y, pacMan.Position.x].HasFlag(Tile.Ghost)) // 고스트
         {
-            if (true) // 그 고스트가 frightened 모드일 때
+            if (false) // 그 고스트가 frightened 모드일 때
             {
                 ghostCapturedCount++;
 
@@ -104,7 +104,7 @@ class GameScene : Scene
 
                 scoreText = score.ToString();
             }
-        }
+        }*/
     }
 
     public override void Draw(ScreenBuffer buffer)

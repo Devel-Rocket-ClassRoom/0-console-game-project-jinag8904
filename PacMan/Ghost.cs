@@ -25,7 +25,7 @@ class Ghost : GameObject
 
     public override void Draw(ScreenBuffer buffer)
     {
-        buffer.SetCell(Position.x + MapManager.Left, Position.y + MapManager.Top, '♠');
+        buffer.SetCell(Position.x + MapManager.Left, Position.y + MapManager.Top, '∩');
     }
 }
 
@@ -36,8 +36,8 @@ class RedGhost : Ghost, IGhost
         Name = "Red";
         frightened = false;
 
-        //Position = (14, 11);
-        //MapManager.MapTile[11, 14] |= Tile.Ghost;
+        Position = (14, 11);
+        MapManager.MapTile[11, 14] |= Tile.Ghost;
     }
 
     public override void Update(float deltaTime)
@@ -57,7 +57,7 @@ class RedGhost : Ghost, IGhost
 
     public override void Draw(ScreenBuffer buffer)
     {
-        //buffer.SetCell(Position.x + MapManager.Left, Position.y + MapManager.Top, '∩', ConsoleColor.Red);
+        buffer.SetCell(Position.x + MapManager.Left, Position.y + MapManager.Top, '∩', ConsoleColor.Red);
     }
 }
 

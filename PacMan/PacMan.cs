@@ -10,7 +10,7 @@ class PacMan : GameObject
     private float _moveTimer;
 
     public bool Alive { get; private set; } = true;
-    public bool AtePowerPellet { get; set; } = false;
+    //public bool AtePowerPellet { get; set; } = false;
 
     public (int x, int y) Position;
 
@@ -76,18 +76,18 @@ class PacMan : GameObject
 
         var finalPos = (x: Position.x + _direction.x, y: Position.y + _direction.y);    // 다음 위치
 
-        if (!MapManager.MapTile[finalPos.y, finalPos.x].HasFlag(Tile.Wall))
+        if (!(MapManager.MapTile[finalPos.y, finalPos.x].HasFlag(Tile.Wall) || MapManager.MapTile[finalPos.y, finalPos.x].HasFlag(Tile.GhostHouse)))
         {
             MapManager.MapTile[Position.y, Position.x] &= ~Tile.PacMan; // 원래 위치에서 팩맨 플래그 제거
             Position = finalPos;                                        // 좌표 갱신
             MapManager.MapTile[Position.y, Position.x] |= Tile.PacMan;  // 새 위치에 팩맨 플래그 설정
 
-            if (MapManager.MapTile[Position.y, Position.x].HasFlag(Tile.Ghost))
+/*            if (MapManager.MapTile[Position.y, Position.x].HasFlag(Tile.Ghost))
             {
                 if (!AtePowerPellet) Alive = false;
-            }
+            }*/
 
-            else if (MapManager.MapTile[Position.y, Position.x].HasFlag(Tile.Pellet))
+            if (MapManager.MapTile[Position.y, Position.x].HasFlag(Tile.Pellet)) // 펠렛
             {
                 MapManager.MapTile[Position.y, Position.x] &= ~Tile.Pellet;
                 GameScene.score += 10;
@@ -100,9 +100,9 @@ class PacMan : GameObject
                 GameScene.score += 50;
                 GameScene.scoreText = GameScene.score.ToString();
 
-                GameScene.fightenedModeTimer = 0;
+                //GameScene.fightenedModeTimer = 0;
 
-                AtePowerPellet = true;
+                //AtePowerPellet = true;
             }
         }
     }
