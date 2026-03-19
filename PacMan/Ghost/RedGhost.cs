@@ -1,72 +1,6 @@
 ﻿using Framework.Engine;
 using System;
 
-class Ghost : GameObject
-{
-    public (int x, int y)[] directions = { (0, -1), (0, 1), (-1, 0), (1, 0) };
-
-    public (int x, int y) Position;
-
-    private const float k_MoveInterval = 0.3f;
-    private const float k_FrightenedMoveInterval = 0.5f;
-    private const float k_GoingHomeMoveInterval = 0.2f;
-
-    private float currentMoveInterval;
-
-    protected (int x, int y) _nextDirection;
-    private float _moveTimer;
-
-    public bool frightened;
-    public bool goingHome;
-
-    protected Ghost(Scene scene) : base(scene)
-    {
-        currentMoveInterval = k_MoveInterval;
-    }
-
-    public override void Update(float deltaTime)
-    {
-        _moveTimer += deltaTime;
-
-        if (_moveTimer > currentMoveInterval)
-        {
-            Move();
-            _moveTimer = 0f;
-        }
-    }
-
-    public virtual void SetNextMove((int x, int y) pacManPos, (int x, int y) pacManDir)    // 팩맨 위치가 변할 때마다 위치를 받아 경로 재계산 (가상함수)
-    {
-    }
-
-    public virtual void Move()
-    {
-        Position = (x: Position.x + _nextDirection.x, y: Position.y + _nextDirection.y);
-        if (IsHit() && !frightened) GameScene.isGameOver = true;
-    }
-
-    public bool IsHit() => MapManager.MapTile[Position.y, Position.x] == Tile.PacMan;
-
-    public virtual void FrightenedOn()
-    {
-        frightened = true;
-        currentMoveInterval = k_FrightenedMoveInterval;
-    }
-    public virtual void FrightenedOff()
-    {
-        frightened = false;
-        currentMoveInterval = k_MoveInterval;
-    }
-
-    public virtual void GoingHomeOn()
-    {
-        goingHome = true;
-        currentMoveInterval = k_GoingHomeMoveInterval;
-    }
-
-    public override void Draw(ScreenBuffer buffer) => buffer.SetCell(Position.x + MapManager.Left, Position.y + MapManager.Top, '∩');    
-}
-
 class RedGhost : Ghost
 {
     public RedGhost(Scene scene) : base(scene)
@@ -96,7 +30,7 @@ class RedGhost : Ghost
         if (goingHome)
         {
             // 이미 집에 있으면 goingHome 해제, 속도 변경
-            
+
             // 가는 도중이면... targetPos는 집
         }
 
@@ -121,7 +55,7 @@ class RedGhost : Ghost
             int testY = Position.y + dir.y;
 
             // 1. 벽 체크 (벽이 아닐 때만 후보로 등록)
-            if (!(MapManager.MapTile[testY, testX].HasFlag(Tile.Wall)) && !(MapManager.MapTile[testY, testX].HasFlag(Tile.GhostHouse)))
+            if (!MapManager.MapTile[testY, testX].HasFlag(Tile.Wall) && !MapManager.MapTile[testY, testX].HasFlag(Tile.GhostHouse))
             {
                 // 2. 타겟(팩맨)까지의 거리 계산 (피타고라스 정리: a^2 + b^2)
                 double dist = Math.Pow(targetPos.x - testX, 2) + Math.Pow(targetPos.y - testY, 2);
@@ -144,21 +78,10 @@ class RedGhost : Ghost
         MapManager.MapTile[Position.y, Position.x] |= Tile.RedGhost;  // 새 위치에 플래그 설정
     }
 
-    public override void FrightenedOn()
-    {
-        base.FrightenedOn();
-    }
-
-    public override void FrightenedOff()
-    {
-        base.FrightenedOff();
-    }
-
-    public override void GoingHomeOn()
-    {
-        base.GoingHomeOn();
-    }
-
+    public override void FrightenedOn() => base.FrightenedOn();
+    public override void FrightenedOff() => base.FrightenedOff();    
+    public override void GoingHomeOn() => base.GoingHomeOn();
+    
     public override void Draw(ScreenBuffer buffer)
     {
         // '∩'
@@ -173,7 +96,7 @@ class RedGhost : Ghost
 
         if (goingHome)
         {
-            c = 'ㅎ';
+            c = '집';
             color = ConsoleColor.White;
         }
 

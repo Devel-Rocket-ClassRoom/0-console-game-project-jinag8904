@@ -8,7 +8,7 @@ public class MapManager : GameObject
     public const int Right = 27;
     public const int Bottom = 33;
 
-    private string[] MapBase =
+    public static string[] MapBase =
     {
         "############################",
         "#............##............#",
@@ -52,7 +52,7 @@ public class MapManager : GameObject
             for (int x = 0; x < 28; x++)
             {
                 char tile = MapBase[y][x];
-                
+
                 MapTile[y, x] = tile switch
                 {
                     '#' => Tile.Wall,
