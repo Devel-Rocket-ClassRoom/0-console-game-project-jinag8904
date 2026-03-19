@@ -7,19 +7,34 @@ class GameScene : Scene
 {
     public static int score;
     public static string scoreText = "00";
+    public static int ghostCapturedCount = 0;
+
+    private const float k_FrightenedModeDuration = 10f;
+    private float _fightenedModeTimer;
+
     private bool isGameOver;
+    public bool powerEventOn = false;
 
     MapManager map;
     PacMan pacMan;
 
     public event GameAction PlayAgainRequested;
 
+    public static event GameAction OnFrightenedMode;
+    public static event GameAction OffFrightenedMode;
+
     public override void Load()
     {
         score = 0;
-        isGameOver = false;
+        scoreText = "00";
+        ghostCapturedCount = 0;
 
-        map = new(this);
+        _fightenedModeTimer = 0;
+
+        isGameOver = false;
+        powerEventOn = false;
+
+        map = new (this);
         AddGameObject(map);
 
         pacMan = new(this);
@@ -47,14 +62,67 @@ class GameScene : Scene
             return;
         }
 
-        if (pacMan.PowerMode)
+        if (pacMan.AtePowerPellet)
         {
-            // 일정 시간 동안~
-
-                // 유령은 겁먹음 모드
+            pacMan.AtePowerPellet = false;
+            powerEventOn = true;
+            OnFrightenedMode?.Invoke();            
         }
 
-        // 파워사탕을 먹은 경우, 팩맨은 각성, 유령은 도망
+        if (powerEventOn)
+        {
+            _fightenedModeTimer += deltaTime;
+
+            if (_fightenedModeTimer > k_FrightenedModeDuration)
+            {
+                OffFrightenedMode?.Invoke();
+                powerEventOn = false;
+                _fightenedModeTimer = 0f;
+                ghostCapturedCount = 0;
+            }
+        }
+
+        if (MapManager.MapTile[pacMan.Position.y, pacMan.Position.x].HasFlag(Tile.Pellet))
+        {
+            MapManager.MapTile[pacMan.Position.y, pacMan.Position.x] &= ~Tile.Pellet;
+            score += 10;
+            scoreText = score.ToString();
+        }
+
+        else if (MapManager.MapTile[pacMan.Position.y, pacMan.Position.x].HasFlag(Tile.PowerPellet)) // 파워 펠렛
+        {
+            MapManager.MapTile[pacMan.Position.y, pacMan.Position.x] &= ~Tile.PowerPellet;
+            score += 50;
+            scoreText = score.ToString();
+
+            _fightenedModeTimer = 0;
+        }
+
+        if (MapManager.MapTile[pacMan.Position.y, pacMan.Position.x].HasFlag(Tile.Ghost)) // 고스트
+        {
+            if (true) // 그 고스트가 frightened 모드일 때
+            {
+                ghostCapturedCount++;
+
+                switch (ghostCapturedCount)
+                {
+                    case 1:
+                        score += 200;
+                        break;
+                    case 2:
+                        score += 400;
+                        break;
+                    case 3:
+                        score += 800;
+                        break;
+                    case 4:
+                        score += 1600;
+                        break;
+                }
+
+                scoreText = score.ToString();
+            }
+        }
     }
 
     public override void Draw(ScreenBuffer buffer)

@@ -98,7 +98,7 @@ public class MapManager : GameObject
                 {
                     s = "〓";
                 }
-                else
+                else if (currentTile.HasFlag(Tile.Empty))
                 {
                     s = "ㅤ";
                 }
@@ -114,11 +114,11 @@ public class MapManager : GameObject
 [Flags]
 public enum Tile
 {
-    Empty = 0,
-    Wall = 1 << 0,
-    GhostHouse = 1 << 1,
-    Pellet = 1 << 2,
-    PowerPellet = 1 << 3,
-    Ghost = 1 << 4,
-    PacMan = 1 << 5
+    Empty       = 0,
+    Wall        = 1 << 1,
+    GhostHouse  = 1 << 2,
+    Pellet      = 1 << 3,
+    PowerPellet = 1 << 4,
+    Ghost       = 1 << 5,
+    PacMan      = 1 << 6
 }
