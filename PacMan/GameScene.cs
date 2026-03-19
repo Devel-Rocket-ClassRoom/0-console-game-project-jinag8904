@@ -1,42 +1,54 @@
 ﻿using Framework.Engine;
 using System;
+using System.Collections.Generic;
 
 class GameScene : Scene
 {
     public static int score;
     public static string scoreText = "00";
-    //public static int ghostCapturedCount = 0;
+    public static int ghostCapturedCount = 0;
 
-/*    private const float k_FrightenedModeDuration = 10f;
-    public static float fightenedModeTimer;*/
+    private const float k_FrightenedModeDuration = 10f;
+    public static float fightenedModeTimer;
 
     private bool isGameOver;
-    //public bool powerEventOn = false;
+    public bool powerEventOn = false;
 
     MapManager map;
     PacMan pacMan;
 
+    List<Ghost> ghosts = new();
+    Ghost redGhost;
+    Ghost pinkGhost;
+    Ghost orangeGhost;
+    Ghost mintGhost;
+
     public event GameAction PlayAgainRequested;
 
-    //public static event GameAction OnFrightenedMode;
-    //public static event GameAction OffFrightenedMode;
+    public static event GameAction OnFrightenedMode;
+    public static event GameAction OffFrightenedMode;
 
     public override void Load()
     {
         score = 0;
         scoreText = "00";
-/*        ghostCapturedCount = 0;
+        ghostCapturedCount = 0;
 
-        fightenedModeTimer = 0;*/
+        fightenedModeTimer = 0;
 
         isGameOver = false;
-        //powerEventOn = false;
+        powerEventOn = false;
 
         map = new (this);
         AddGameObject(map);
 
         pacMan = new(this);
         AddGameObject(pacMan);
+       
+        redGhost = new RedGhost(this);
+        AddGameObject(redGhost);
+
+        ghosts.Add(redGhost);
     }
 
     public override void Unload()
@@ -52,19 +64,16 @@ class GameScene : Scene
             return;
         }
 
-        UpdateGameObjects(deltaTime);
-
-        if (!pacMan.Alive)
+        foreach (var ghost in ghosts)
         {
-            isGameOver = true;
-            return;
+            ghost.SetNextMove(pacMan.Position, pacMan.direction);
         }
-/*
+
         if (pacMan.AtePowerPellet)
         {
             pacMan.AtePowerPellet = false;
             powerEventOn = true;
-            OnFrightenedMode?.Invoke();            
+            OnFrightenedMode?.Invoke();
         }
 
         if (powerEventOn)
@@ -78,33 +87,63 @@ class GameScene : Scene
                 fightenedModeTimer = 0f;
                 ghostCapturedCount = 0;
             }
-        }*/
+        }
 
-/*        if (MapManager.MapTile[pacMan.Position.y, pacMan.Position.x].HasFlag(Tile.Ghost)) // 고스트
+        UpdateGameObjects(deltaTime);
+
+        if (!pacMan.Alive)
         {
-            if (false) // 그 고스트가 frightened 모드일 때
+            isGameOver = true;
+            return;
+        }
+
+        Tile tile = MapManager.MapTile[pacMan.Position.y, pacMan.Position.x];
+
+        if (tile == (Tile.RedGhost | Tile.PinkGhost | Tile.OrangeGhost | Tile.MintGhost))
+        {
+            switch (tile)
             {
-                ghostCapturedCount++;
+                case Tile.RedGhost:
+                    if (RedGhost.frightened && !RedGhost.goingHome)
+                    {
+                        ghostCapturedCount++;
+                        RedGhost.goingHome = true;
+                    }
 
-                switch (ghostCapturedCount)
-                {
-                    case 1:
-                        score += 200;
-                        break;
-                    case 2:
-                        score += 400;
-                        break;
-                    case 3:
-                        score += 800;
-                        break;
-                    case 4:
-                        score += 1600;
-                        break;
-                }
+                    else if (RedGhost.goingHome)
+                    {
+                
+                    }
 
-                scoreText = score.ToString();
+                    else
+                    {
+                        isGameOver = true;
+                    }
+
+                    break;
+
+                default:
+                    break;
             }
-        }*/
+
+            switch (ghostCapturedCount)
+            {
+                case 1:
+                    score += 200;
+                    break;
+                case 2:
+                    score += 400;
+                    break;
+                case 3:
+                    score += 800;
+                    break;
+                case 4:
+                    score += 1600;
+                    break;
+            }
+
+            scoreText = score.ToString();
+        }
     }
 
     public override void Draw(ScreenBuffer buffer)

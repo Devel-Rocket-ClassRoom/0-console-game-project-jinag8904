@@ -42,6 +42,8 @@ namespace Framework.Engine
 
         private static void EnableVirtualTerminalProcessing()
         {
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+
             try
             {
                 const int STD_OUTPUT_HANDLE = -11;

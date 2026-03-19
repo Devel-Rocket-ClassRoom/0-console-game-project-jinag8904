@@ -75,9 +75,9 @@ public class MapManager : GameObject
                 var color = ConsoleColor.White;
                 var currentTile = MapTile[y, x];
 
-                if (currentTile.HasFlag(Tile.PacMan))   continue;   // 팩맨, 유령은 팩맨 클래스에서 그리므로 패스
-                //if (currentTile.HasFlag(Tile.Ghost))    continue;
-                
+                if (currentTile.HasFlag(Tile.PacMan)) continue;   // 팩맨, 유령은 팩맨 클래스에서 그리므로 패스
+                if (currentTile.HasFlag(Tile.RedGhost | Tile.PinkGhost | Tile.OrangeGhost | Tile.MintGhost)) continue;
+
                 if (currentTile.HasFlag(Tile.Wall))
                 {
                     s = "田";
@@ -116,6 +116,9 @@ public enum Tile
     GhostHouse  = 1 << 1,
     Pellet      = 1 << 2,
     PowerPellet = 1 << 3,
-    Ghost       = 1 << 4,
-    PacMan      = 1 << 5
+    RedGhost    = 1 << 4,
+    PinkGhost   = 1 << 5,
+    OrangeGhost = 1 << 6,
+    MintGhost   = 1 << 7,
+    PacMan      = 1 << 8
 }

@@ -3,16 +3,15 @@ using System;
 
 class PacMan : GameObject
 {
-    private const float k_MoveInterval = 0.15f; // 이동 텀
+    public (int x, int y) Position;
 
-    private (int x, int y) _direction;
+    private const float k_MoveInterval = 0.15f;
+    public (int x, int y) direction;
     private (int x, int y) _nextDirection;
     private float _moveTimer;
 
     public bool Alive { get; private set; } = true;
-    //public bool AtePowerPellet { get; set; } = false;
-
-    public (int x, int y) Position;
+    public bool AtePowerPellet { get; set; } = false;
 
     public PacMan(Scene scene) : base(scene)
     {
@@ -21,7 +20,7 @@ class PacMan : GameObject
         Position = (14, 23);
         MapManager.MapTile[23, 14] |= Tile.PacMan;
 
-        _direction = (-1, 0);
+        direction = (-1, 0);
         _nextDirection = (-1, 0);
     }
 
@@ -66,43 +65,47 @@ class PacMan : GameObject
 
     private void Move()
     {
-        // !!!맵 양쪽 끝 처리 필요!!!
-
         var nextStep = (x: Position.x + _nextDirection.x, y: Position.y + _nextDirection.y);    // 다음 방향
-        if (!MapManager.MapTile[nextStep.y, nextStep.x].HasFlag(Tile.Wall))
+        Tile nextStepTile = MapManager.MapTile[nextStep.y, nextStep.x];
+
+        if (!nextStepTile.HasFlag(Tile.Wall) && !nextStepTile.HasFlag(Tile.GhostHouse))
         {
-            _direction = _nextDirection;
+            direction = _nextDirection;
         }
 
-        var finalPos = (x: Position.x + _direction.x, y: Position.y + _direction.y);    // 다음 위치
+        var finalPos = (x: Position.x + direction.x, y: Position.y + direction.y);    // 다음 위치
+        Tile finalTile = MapManager.MapTile[finalPos.y, finalPos.x];
 
-        if (!(MapManager.MapTile[finalPos.y, finalPos.x].HasFlag(Tile.Wall) || MapManager.MapTile[finalPos.y, finalPos.x].HasFlag(Tile.GhostHouse)))
+        if (!finalTile.HasFlag(Tile.Wall) && !finalTile.HasFlag(Tile.GhostHouse))
         {
+            if (finalPos.x < 0) finalPos.x = 27;
+            else if (finalPos.x > 27) finalPos.x = 0;
+
             MapManager.MapTile[Position.y, Position.x] &= ~Tile.PacMan; // 원래 위치에서 팩맨 플래그 제거
             Position = finalPos;                                        // 좌표 갱신
             MapManager.MapTile[Position.y, Position.x] |= Tile.PacMan;  // 새 위치에 팩맨 플래그 설정
 
-/*            if (MapManager.MapTile[Position.y, Position.x].HasFlag(Tile.Ghost))
+            if (finalTile.HasFlag(Tile.RedGhost))
             {
-                if (!AtePowerPellet) Alive = false;
-            }*/
+                Alive = false;
+            }
 
-            if (MapManager.MapTile[Position.y, Position.x].HasFlag(Tile.Pellet)) // 펠렛
+            if (finalTile.HasFlag(Tile.Pellet)) // 펠렛
             {
                 MapManager.MapTile[Position.y, Position.x] &= ~Tile.Pellet;
                 GameScene.score += 10;
                 GameScene.scoreText = GameScene.score.ToString();
             }
 
-            else if (MapManager.MapTile[Position.y, Position.x].HasFlag(Tile.PowerPellet)) // 파워 펠렛
+            else if (finalTile.HasFlag(Tile.PowerPellet)) // 파워 펠렛
             {
                 MapManager.MapTile[Position.y, Position.x] &= ~Tile.PowerPellet;
                 GameScene.score += 50;
                 GameScene.scoreText = GameScene.score.ToString();
 
-                //GameScene.fightenedModeTimer = 0;
+                GameScene.fightenedModeTimer = 0;
 
-                //AtePowerPellet = true;
+                AtePowerPellet = true;
             }
         }
     }
@@ -111,7 +114,7 @@ class PacMan : GameObject
     {
         var c = ' ';
 
-        switch (_direction)
+        switch (direction)
         {
             case (1, 0):
                 c = '▶';
