@@ -59,31 +59,31 @@ abstract class Ghost : GameObject
         _blinkingTimer += deltaTime;
 
         if (frightened) _frightenedTimer += deltaTime;
-        if (_waitingTimer < waitingDuration) _waitingTimer += deltaTime;    // 대기
 
+        if (_frightenedTimer > k_FrightenedDuration)
+        {
+            FrightenedOff();
+            _frightenedTimer = 0f;
+        }
+
+        if (_blinkingTimer > k_BlinkingInterval)
+        {
+            _blinkingTimer = 0f;
+
+            // frightened 모드 끝나기 3초 전 깜빡깜빡 효과
+            if (frightened && _frightenedTimer > k_FrightenedDuration - 3)
+            {
+                frightenedColor = frightenedColor == ConsoleColor.Blue ? ConsoleColor.White : ConsoleColor.Blue;
+            }
+        }
+
+        if (_waitingTimer < waitingDuration) _waitingTimer += deltaTime;    // 대기
         else
         {
             if (_moveTimer > currentMoveInterval)
             {
                 Move();
                 _moveTimer = 0f;
-            }
-
-            if (_frightenedTimer > k_FrightenedDuration)
-            {
-                FrightenedOff();
-                _frightenedTimer = 0f;
-            }
-
-            if (_blinkingTimer > k_BlinkingInterval)
-            {
-                _blinkingTimer = 0f;
-
-                // frightened 모드 끝나기 3초 전 깜빡깜빡 효과
-                if (frightened && _frightenedTimer > k_FrightenedDuration - 3)
-                {
-                    frightenedColor = frightenedColor == ConsoleColor.Blue ? ConsoleColor.White : ConsoleColor.Blue;
-                }
             }
         }
     }
