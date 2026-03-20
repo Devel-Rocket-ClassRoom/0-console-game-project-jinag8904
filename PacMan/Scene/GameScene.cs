@@ -48,7 +48,11 @@ class GameScene : Scene
         redGhost = new RedGhost(this);
         AddGameObject(redGhost);
 
+        pinkGhost = new PinkGhost(this);
+        AddGameObject(pinkGhost);
+
         ghosts.Add(redGhost);
+        ghosts.Add(pinkGhost);
     }
 
     public override void Unload()
@@ -95,25 +99,29 @@ class GameScene : Scene
 
         if ((tile & (Tile.RedGhost | Tile.PinkGhost | Tile.OrangeGhost | Tile.MintGhost)) != 0)
         {
-            if ((tile & Tile.RedGhost) != 0)
+            Ghost ghost;
+
+            if ((tile & Tile.RedGhost) != 0) ghost = ghosts[0];
+            else if ((tile & Tile.PinkGhost) != 0) ghost = ghosts[1];
+            else if ((tile & Tile.MintGhost) != 0) ghost = ghosts[2];
+            else ghost = ghosts[3];
+            
+            if (ghost.frightened && !ghost.goingHome)
             {
-                if (ghosts[0].frightened && !ghosts[0].goingHome)
-                {
-                    ghostCapturedCount++;
-                    ghosts[0].GoingHomeOn();
-                }
-
-                else if (ghosts[0].goingHome)
-                {
-                    // 아무것도 하지 않음
-                }
-
-                else
-                {
-                    isGameOver = true;
-                }
+                ghostCapturedCount++;
+                ghost.GoingHomeOn();
             }
 
+            else if (ghost.goingHome)
+            {
+                // 아무것도 하지 않음
+            }
+
+            else
+            {
+                isGameOver = true;
+            }
+        
             switch (ghostCapturedCount)
             {
                 case 1:
