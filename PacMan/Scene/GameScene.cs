@@ -16,6 +16,7 @@ class GameScene : Scene
     private const float k_WaitingTime = 3f;
     private static float waitingTimer;
     public static bool isStarted;
+    public static bool isRunning;
 
     public static  bool isGameOver;
     public bool powerEventOn = false;
@@ -45,6 +46,7 @@ class GameScene : Scene
         fightenedModeTimer = 0;
         waitingTimer = 0;
         isStarted = false;
+        isRunning = false;
 
         isGameOver = false;
         powerEventOn = false;
@@ -118,44 +120,63 @@ class GameScene : Scene
                 return;
             }
 
-            Tile tile = MapManager.MapTile[PacMan.Position.y, PacMan.Position.x];
-
-            if ((tile & (Tile.RedGhost | Tile.PinkGhost | Tile.OrangeGhost | Tile.MintGhost)) != 0)
+            if (isRunning)
             {
-                List<Ghost> hitGhosts = new();
+                Tile tile = MapManager.MapTile[PacMan.Position.y, PacMan.Position.x];
 
-                if ((tile & Tile.RedGhost) != 0) hitGhosts.Add(ghosts[0]);
-                if ((tile & Tile.PinkGhost) != 0) hitGhosts.Add(ghosts[1]);
-                if ((tile & Tile.MintGhost) != 0) hitGhosts.Add(ghosts[2]);
-                if ((tile & Tile.OrangeGhost) != 0) hitGhosts.Add(ghosts[3]);
-
-                foreach (Ghost ghost in hitGhosts)
+                if ((tile & (Tile.RedGhost | Tile.PinkGhost | Tile.OrangeGhost | Tile.MintGhost)) != 0)
                 {
-                    if (!ghost.frightened) isGameOver = true;
-                    else if (!ghost.goingHome)
-                    {
-                        ghostCapturedCount++;
-                        ghost.GoingHomeOn();
-                    }
+                    List<Ghost> hitGhosts = new();
 
-                    switch (ghostCapturedCount)
-                    {
-                        case 1:
-                            score += 200;
-                            break;
-                        case 2:
-                            score += 400;
-                            break;
-                        case 3:
-                            score += 800;
-                            break;
-                        case 4:
-                            score += 1600;
-                            break;
-                    }
+                    if ((tile & Tile.RedGhost) != 0) hitGhosts.Add(ghosts[0]);
+                    if ((tile & Tile.PinkGhost) != 0) hitGhosts.Add(ghosts[1]);
+                    if ((tile & Tile.MintGhost) != 0) hitGhosts.Add(ghosts[2]);
+                    if ((tile & Tile.OrangeGhost) != 0) hitGhosts.Add(ghosts[3]);
 
-                    scoreText = score.ToString();
+                    foreach (Ghost ghost in hitGhosts)
+                    {
+                        if (!ghost.frightened) isGameOver = true;
+                        else if (!ghost.goingHome)
+                        {
+                            waitingTimer = 0;
+                            isRunning = false;
+                            ghostCapturedCount++;
+                            ghost.GoingHomeOn();
+                        }
+
+                        switch (ghostCapturedCount)
+                        {
+                            case 1:
+                                score += 200;
+                                pacMan.scorePrint = "200";
+                                break;
+                            case 2:
+                                score += 400;
+                                pacMan.scorePrint = "400";
+                                break;
+                            case 3:
+                                score += 800;
+                                pacMan.scorePrint = "800";
+                                break;
+                            case 4:
+                                score += 1600;
+                                pacMan.scorePrint = "1600";
+                                break;
+                        }
+
+                        scoreText = score.ToString();
+                    }
                 }
+            }
+
+            else if (waitingTimer < 2)
+            {
+                waitingTimer += deltaTime;
+            }
+
+            else
+            {
+                isRunning = true;
             }
         }
 
@@ -167,6 +188,7 @@ class GameScene : Scene
         else
         {
             isStarted = true;
+            isRunning = true;
         }        
     }
 

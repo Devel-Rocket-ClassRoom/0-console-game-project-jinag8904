@@ -12,9 +12,9 @@ abstract class Ghost : GameObject
     protected (int x, int y) homePos;
     protected (int x, int y) targetPos;
 
-    protected const float k_MoveInterval = 0.15f;
-    protected const float k_FrightenedMoveInterval = 0.3f;
-    protected const float k_GoingHomeMoveInterval = 0.05f;
+    protected const float k_MoveInterval = 0.1f;
+    protected const float k_FrightenedMoveInterval = 0.2f;
+    protected const float k_GoingHomeMoveInterval = 0.03f;
     protected float currentMoveInterval;
 
     protected const float k_FrightenedDuration = 10f;
@@ -59,35 +59,38 @@ abstract class Ghost : GameObject
     {
         SetNextMove(PacMan.Position, PacMan.direction);
 
-        _moveTimer += deltaTime;
-        _blinkingTimer += deltaTime;
-
-        if (frightened) _frightenedTimer += deltaTime;
-
-        if (_frightenedTimer > k_FrightenedDuration)
+        if (GameScene.isRunning)
         {
-            FrightenedOff();
-            _frightenedTimer = 0f;
-        }
+            _moveTimer += deltaTime;
+            _blinkingTimer += deltaTime;
 
-        if (_blinkingTimer > k_BlinkingInterval)
-        {
-            _blinkingTimer = 0f;
+            if (frightened) _frightenedTimer += deltaTime;
 
-            // frightened 모드 끝나기 3초 전 깜빡깜빡 효과
-            if (frightened && _frightenedTimer > k_FrightenedDuration - 3)
+            if (_frightenedTimer > k_FrightenedDuration)
             {
-                frightenedColor = frightenedColor == ConsoleColor.Blue ? ConsoleColor.White : ConsoleColor.Blue;
+                FrightenedOff();
+                _frightenedTimer = 0f;
             }
-        }
 
-        if (_waitingTimer < waitingDuration) _waitingTimer += deltaTime;    // 대기
-        else
-        {
-            if (_moveTimer > currentMoveInterval)
+            if (_blinkingTimer > k_BlinkingInterval)
             {
-                Move();
-                _moveTimer = 0f;
+                _blinkingTimer = 0f;
+
+                // frightened 모드 끝나기 3초 전 깜빡깜빡 효과
+                if (frightened && _frightenedTimer > k_FrightenedDuration - 3)
+                {
+                    frightenedColor = frightenedColor == ConsoleColor.Blue ? ConsoleColor.White : ConsoleColor.Blue;
+                }
+            }
+
+            if (_waitingTimer < waitingDuration) _waitingTimer += deltaTime;    // 대기
+            else
+            {
+                if (_moveTimer > currentMoveInterval)
+                {
+                    Move();
+                    _moveTimer = 0f;
+                }
             }
         }
     }
@@ -129,7 +132,7 @@ abstract class Ghost : GameObject
     protected (int x, int y) GetBestDir((int x, int y) targetPos)
     {
         int minDistance = int.MaxValue;
-        (int dx, int dy) bestDir = (0, 0);
+        (int dx, int dy) bestDir = (1, 0);
 
         foreach (var dir in directions)
         {

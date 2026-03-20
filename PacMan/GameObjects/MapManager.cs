@@ -8,6 +8,10 @@ public class MapManager : GameObject
     public const int Right = 27;
     public const int Bottom = 33;
 
+    private const float k_BlinkingInterval = 0.15f;
+    private float _blinkingTimer;
+    private ConsoleColor blinkingColor;
+
     public static string[] MapBase =
     {
         "############################",
@@ -47,6 +51,8 @@ public class MapManager : GameObject
 
     public MapManager(Scene scene) : base(scene)
     {
+        blinkingColor = ConsoleColor.White;
+
         for (int y = 0; y < 31; y++)
         {
             for (int x = 0; x < 28; x++)
@@ -65,6 +71,17 @@ public class MapManager : GameObject
         }
     }
 
+    public override void Update(float deltaTime)
+    {
+        _blinkingTimer += deltaTime;
+
+        if (_blinkingTimer > k_BlinkingInterval)
+        {
+            _blinkingTimer = 0f;
+            blinkingColor = blinkingColor == ConsoleColor.Black ? ConsoleColor.White : ConsoleColor.Black;
+        }
+    }
+
     public override void Draw(ScreenBuffer buffer)
     {
         for (int y = 0; y < MapTile.GetLength(0); y++)
@@ -75,7 +92,7 @@ public class MapManager : GameObject
                 var color = ConsoleColor.White;
                 var currentTile = MapTile[y, x];
 
-                if (currentTile.HasFlag(Tile.PacMan)) continue;   // 팩맨, 유령은 팩맨 클래스에서 그리므로 패스
+                if (currentTile.HasFlag(Tile.PacMan)) continue;   // 팩맨, 유령은 클래스에서 각자 그리므로 패스
                 if (currentTile.HasFlag(Tile.RedGhost | Tile.PinkGhost | Tile.OrangeGhost | Tile.MintGhost)) continue;
 
                 if (currentTile.HasFlag(Tile.Wall))
@@ -86,6 +103,7 @@ public class MapManager : GameObject
                 else if (currentTile.HasFlag(Tile.PowerPellet))
                 {
                     s = "ㅇ";
+                    color = blinkingColor;
                 }
                 else if (currentTile.HasFlag(Tile.Pellet))
                 {
@@ -104,8 +122,6 @@ public class MapManager : GameObject
             }
         }
     }
-
-    public override void Update(float deltaTime) { }
 }
 
 [Flags]

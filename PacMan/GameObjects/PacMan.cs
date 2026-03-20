@@ -5,8 +5,7 @@ class PacMan : GameObject
 {
     public static (int x, int y) Position;
 
-    private const float k_MoveInterval = 0.17f;
-    private const float k_waitingTime = 3f;
+    private const float k_MoveInterval = 0.11f;
 
     public static (int x, int y) direction;
     private (int x, int y) _nextDirection;
@@ -14,6 +13,8 @@ class PacMan : GameObject
 
     public bool Alive { get; private set; } = true;
     public bool AtePowerPellet { get; set; } = false;
+
+    public string scorePrint;
 
     public PacMan(Scene scene) : base(scene)
     {
@@ -30,16 +31,19 @@ class PacMan : GameObject
 
     public override void Update(float deltaTime)
     {
-        if (!Alive) return;
-
-        HandleInput();
-
-        _moveTimer += deltaTime;
-
-        if (_moveTimer > k_MoveInterval)
+        if (GameScene.isRunning)
         {
-            Move();
-            _moveTimer = 0f;
+            if (!Alive) return;
+
+            HandleInput();
+
+            _moveTimer += deltaTime;
+
+            if (_moveTimer > k_MoveInterval)
+            {
+                Move();
+                _moveTimer = 0f;
+            }
         }
     }
 
@@ -110,24 +114,34 @@ class PacMan : GameObject
 
     public override void Draw(ScreenBuffer buffer)
     {
-/*        var c = ' ';
+        /*        var c = ' ';
 
-        switch (direction)
+                switch (direction)
+                {
+                    case (1, 0):
+                        c = '▶';
+                        break;
+                    case (-1, 0):
+                        c = '◀';
+                        break;
+                    case (0, 1):
+                        c = '▼';
+                        break;
+                    case (0, -1):
+                        c = '▲';
+                        break;
+                }*/
+
+        var print = "팩";
+        var color = ConsoleColor.Yellow;
+
+        if (GameScene.isStarted && !GameScene.isRunning)
         {
-            case (1, 0):
-                c = '▶';
-                break;
-            case (-1, 0):
-                c = '◀';
-                break;
-            case (0, 1):
-                c = '▼';
-                break;
-            case (0, -1):
-                c = '▲';
-                break;
-        }*/
+            print = scorePrint;
+            color = ConsoleColor.DarkCyan;            
+        }
 
-        buffer.SetCell(Position.x +MapManager.Left, Position.y +MapManager.Top, '팩', ConsoleColor.Yellow);
+        buffer.WriteText(Position.x + MapManager.Left, Position.y + MapManager.Top, print, color);
+        // buffer.SetCell(Position.x + MapManager.Left, Position.y + MapManager.Top, print, color);       
     }
 }
