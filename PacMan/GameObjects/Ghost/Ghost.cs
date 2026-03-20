@@ -103,7 +103,7 @@ abstract class Ghost : GameObject
         }
     }
 
-    public virtual void SetNextMove((int x, int y) pacManPos, (int x, int y) pacManDir)    // 팩맨 위치가 변할 때마다 위치를 받아 경로 재계산 (가상함수)
+    public virtual void SetNextMove((int x, int y) pacManPos, (int x, int y) pacManDir)    // 위치를 받아 경로 재계산 (가상함수)
     {
         if (goingHome)
         {
@@ -150,6 +150,9 @@ abstract class Ghost : GameObject
             var nextX = Position.x + dir.x;
             var nextY = Position.y + dir.y;
 
+            if (nextX < 0) nextX = 27;
+            else if (nextX > 27) nextX = 0;
+
             if (nextX < 0 || nextX > 27 || nextY < 0 || nextY > 30 ||
             (MapManager.MapTile[nextY, nextX] & Tile.Wall) != 0) continue;
 
@@ -167,11 +170,22 @@ abstract class Ghost : GameObject
 
     public virtual void Move()
     {
-        Position = (x: Position.x + _nextDirection.x, y: Position.y + _nextDirection.y);
+        int nextX = Position.x + _nextDirection.x;
+        int nextY = Position.y + _nextDirection.y;
+
+        if (nextX < 0) nextX = 27;
+        else if (nextX > 27) nextX = 0;
+
+        Position = (nextX, nextY);
         if (IsHit() && !frightened) GameScene.isGameOver = true;
     }
 
-    public bool IsHit() => MapManager.MapTile[Position.y, Position.x] == Tile.PacMan;
+    public bool IsHit()
+    {
+        if (Position.x < 0 || Position.x > 27 || Position.y < 0 || Position.y > 30) return false; // 범위 밖이면 자동으로 false
+        if (frightened || goingHome) return false;
+        else            return (MapManager.MapTile[Position.y, Position.x] & Tile.PacMan) != 0;
+    }
 
     public virtual void FrightenedOn()
     {
@@ -184,8 +198,13 @@ abstract class Ghost : GameObject
     }
     public virtual void FrightenedOff()
     {
-        frightened = false;
-        currentMoveInterval = k_MoveInterval;
+        if (!goingHome)
+        {
+            {
+                frightened = false;
+                currentMoveInterval = k_MoveInterval;
+            }
+        }
     }
 
     public virtual void GoingHomeOn()
@@ -201,7 +220,7 @@ abstract class Ghost : GameObject
 
         if (frightened)
         {
-            c = '런';
+            c = '튀';
             color = frightenedColor;
         }
 
@@ -211,9 +230,10 @@ abstract class Ghost : GameObject
             {
                 return; // 방금 잡은 유령 자리에 점수가 출력되어야 하기 때문에 스킵
             }
+
             else
             {
-                c = '망';
+                c = '눈';
                 color = ConsoleColor.White;
             }
         }
