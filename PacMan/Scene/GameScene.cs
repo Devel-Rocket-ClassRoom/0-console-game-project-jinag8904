@@ -6,6 +6,8 @@ class GameScene : Scene
 {
     public static int score;
     public static string scoreText = "00";
+    public static int PelletCount;
+
     public static int ghostCapturedCount = 0;
 
     private const float k_FrightenedModeDuration = 10f;
@@ -32,6 +34,8 @@ class GameScene : Scene
     {
         score = 0;
         scoreText = "00";
+        PelletCount = 0;
+        
         ghostCapturedCount = 0;
 
         fightenedModeTimer = 0;
@@ -51,16 +55,16 @@ class GameScene : Scene
         pinkGhost = new PinkGhost(this);
         AddGameObject(pinkGhost);
 
-        //mintGhost = new MintGhost(this);
-        //AddGameObject(mintGhost);
+        mintGhost = new MintGhost(this);
+        AddGameObject(mintGhost);
 
-        //orangeGhost = new OrangeGhost(this);
-        //AddGameObject(orangeGhost);
+        orangeGhost = new OrangeGhost(this);
+        AddGameObject(orangeGhost);
 
         ghosts.Add(redGhost);
         ghosts.Add(pinkGhost);
-        //ghosts.Add(mintGhost);
-        //ghosts.Add(orangeGhost);
+        ghosts.Add(mintGhost);
+        ghosts.Add(orangeGhost);
     }
 
     public override void Unload()
@@ -75,6 +79,14 @@ class GameScene : Scene
             if (Input.IsKeyDown(ConsoleKey.Enter)) PlayAgainRequested?.Invoke();
             return;
         }
+
+        if (PelletCount == 244)
+        {
+            // 클리어 처리
+        }
+
+        // mintGhost는 redGhost의 위치를 전달받는다
+        mintGhost.UpdateRedPos(redGhost.Position);
 
         if (pacMan.AtePowerPellet)
         {

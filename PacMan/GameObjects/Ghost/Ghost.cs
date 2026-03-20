@@ -48,12 +48,12 @@ abstract class Ghost : GameObject
         SetNextMove(PacMan.Position, PacMan.direction);
 
         _moveTimer += deltaTime;
+
+        if (frightened) _frightenedTimer += deltaTime;
         if (_waitingTimer < waitingDuration) _waitingTimer += deltaTime;    // 대기
-        
+
         else
         {
-            if (frightened) _frightenedTimer += deltaTime;
-
             if (_moveTimer > currentMoveInterval)
             {
                 Move();
@@ -170,4 +170,6 @@ abstract class Ghost : GameObject
 
         buffer.SetCell(Position.x + MapManager.Left, Position.y + MapManager.Top, c, color);
     }
+
+    public virtual void UpdateRedPos((int x, int y) redPos) { }
 }

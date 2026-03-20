@@ -3,6 +3,8 @@ using System;
 
 class MintGhost : Ghost
 {
+    public (int x, int y) redPos;
+
     public MintGhost(Scene scene) : base(scene)
     {
         Name = "Mint";
@@ -15,25 +17,22 @@ class MintGhost : Ghost
         waitingDuration = 5f;
     }
 
-    // GameScene으로부터 레드의 정보 받기?
-/*    public override void SetNextMove((int x, int y) pacManPos, (int x, int y) pacManDir)   // 경로 탐색, 방향 설정
+    public override void SetNextMove((int x, int y) pacManPos, (int x, int y) pacManDir)   // 경로 탐색, 방향 설정
     {
         int gijunX = pacManPos.x + (pacManDir.x * 2);
         int gijunY = pacManPos.y + (pacManDir.y * 2);
 
-        var redPos = RedGhost.GetRedPos();
-
         int diffX = gijunX - redPos.x;
         int diffY = gijunY - redPos.y;
 
-        int targetX = diffX + (diffX * 2);
-        int targetY = diffY + (diffY * 2);
+        int targetX = redPos.x + (diffX * 2);
+        int targetY = redPos.y + (diffY * 2);
 
         targetPos.x = Math.Clamp(targetX, 0, 27);   // 보정
         targetPos.y = Math.Clamp(targetY, 0, 30);
 
         base.SetNextMove(pacManPos, pacManDir);
-    }*/
+    }
 
     public override void Move()
     {
@@ -41,4 +40,6 @@ class MintGhost : Ghost
         base.Move();
         MapManager.MapTile[Position.y, Position.x] |= Tile.MintGhost;  // 새 위치에 플래그 설정
     }
+
+    public override void UpdateRedPos((int x, int y) redPos) => this.redPos = redPos;
 }
