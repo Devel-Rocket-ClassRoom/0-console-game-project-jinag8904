@@ -138,10 +138,10 @@ class PacMan : GameObject
         if (GameScene.isStarted && !GameScene.isRunning)
         {
             print = scorePrint;
-            color = ConsoleColor.DarkCyan;            
+            color = ConsoleColor.Cyan;
         }
 
         buffer.WriteText(Position.x + MapManager.Left, Position.y + MapManager.Top, print, color);
-        // buffer.SetCell(Position.x + MapManager.Left, Position.y + MapManager.Top, print, color);       
+        // buffer.SetCell(Position.x + MapManager.Left, Position.y + MapManager.Top, print, color);
     }
 }

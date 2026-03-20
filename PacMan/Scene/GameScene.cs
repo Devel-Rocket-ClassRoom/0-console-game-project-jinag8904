@@ -35,6 +35,8 @@ class GameScene : Scene
     public static event GameAction OnFrightenedMode;
     public static event GameAction OffFrightenedMode;
 
+    private static Ghost justCapturedGhost;
+
     public override void Load()
     {
         score = 0;
@@ -142,25 +144,28 @@ class GameScene : Scene
                             isRunning = false;
                             ghostCapturedCount++;
                             ghost.GoingHomeOn();
+                            ghost.justCaptured = true;
+                            justCapturedGhost = ghost;
                         }
 
                         switch (ghostCapturedCount)
                         {
+                            // ０１２３４５６７８９
                             case 1:
                                 score += 200;
-                                pacMan.scorePrint = "200";
+                                pacMan.scorePrint = "２００";
                                 break;
                             case 2:
                                 score += 400;
-                                pacMan.scorePrint = "400";
+                                pacMan.scorePrint = "４００";
                                 break;
                             case 3:
                                 score += 800;
-                                pacMan.scorePrint = "800";
+                                pacMan.scorePrint = "８００";
                                 break;
                             case 4:
                                 score += 1600;
-                                pacMan.scorePrint = "1600";
+                                pacMan.scorePrint = "１６００";
                                 break;
                         }
 
@@ -176,6 +181,8 @@ class GameScene : Scene
 
             else
             {
+                justCapturedGhost.justCaptured = false;
+                justCapturedGhost = null;
                 isRunning = true;
             }
         }

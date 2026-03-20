@@ -38,6 +38,8 @@ abstract class Ghost : GameObject
 
     protected (int x, int y) frightenedDest;
 
+    public bool justCaptured;
+
     protected Ghost(Scene scene) : base(scene)
     {
         frightened = false;
@@ -51,8 +53,9 @@ abstract class Ghost : GameObject
         GameScene.OffFrightenedMode += FrightenedOff;
 
         frightenedColor = ConsoleColor.Blue;
-
         frightenedDest = (rand.Next(0, 28), rand.Next(31));
+
+        justCaptured = false;
     }
 
     public override void Update(float deltaTime)
@@ -196,8 +199,15 @@ abstract class Ghost : GameObject
 
         if (goingHome)
         {
-            c = '으';
-            color = ConsoleColor.White;
+            if (justCaptured)
+            {
+                return; // 방금 잡은 유령 자리에 점수가 출력되어야 하기 때문에 스킵
+            }
+            else
+            {
+                c = '으';
+                color = ConsoleColor.White;
+            }
         }
 
         buffer.SetCell(Position.x + MapManager.Left, Position.y + MapManager.Top, c, color);
