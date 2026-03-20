@@ -5,6 +5,8 @@ public class PacManGame : GameApp
 {
     private readonly SceneManager<Scene> _scenes = new();
 
+    public static int highScore;
+
     public PacManGame() : base(60, 40) { }
     public PacManGame(int width, int height) : base(width, height) { }
 

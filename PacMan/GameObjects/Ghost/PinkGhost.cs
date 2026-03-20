@@ -17,8 +17,8 @@ class PinkGhost : Ghost
         int targetX = pacManPos.x + (pacManDir.x * 4);
         int targetY = pacManPos.y + (pacManDir.y * 4);
 
-        targetPos.x = Math.Clamp(targetX, 0, 27);   // 보정
-        targetPos.y = Math.Clamp(targetY, 0, 30);
+        targetPos.x = Math.Clamp(targetX, 1, 26);   // 보정
+        targetPos.y = Math.Clamp(targetY, 1, 29);
 
         base.SetNextMove(pacManPos, pacManDir);
     }

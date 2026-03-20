@@ -88,7 +88,7 @@ public class MapManager : GameObject
         {
             for (int x = 0; x < MapTile.GetLength(1); x++)
             {
-                string s = "  ";
+                string s = "ㅤ";
                 var color = ConsoleColor.White;
                 var currentTile = MapTile[y, x];
 
@@ -98,7 +98,7 @@ public class MapManager : GameObject
                 if (currentTile.HasFlag(Tile.Wall))
                 {
                     s = "田";
-                    color = ConsoleColor.Blue;
+                    color = ConsoleColor.DarkBlue;
                 }
                 else if (currentTile.HasFlag(Tile.PowerPellet))
                 {

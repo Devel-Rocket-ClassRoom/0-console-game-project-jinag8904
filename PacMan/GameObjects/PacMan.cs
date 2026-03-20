@@ -5,7 +5,10 @@ class PacMan : GameObject
 {
     public static (int x, int y) Position;
 
-    private const float k_MoveInterval = 0.11f;
+    private const float k_MoveInterval = 0.12f;
+    private const float k_EatingMoveInterval = 0.14f;
+
+    private float currentMoveInterval;
 
     public static (int x, int y) direction;
     private (int x, int y) _nextDirection;
@@ -26,6 +29,7 @@ class PacMan : GameObject
         direction = (-1, 0);
         _nextDirection = (-1, 0);
 
+        currentMoveInterval = k_MoveInterval;
         _moveTimer = k_MoveInterval;
     }
 
@@ -39,7 +43,7 @@ class PacMan : GameObject
 
             _moveTimer += deltaTime;
 
-            if (_moveTimer > k_MoveInterval)
+            if (_moveTimer > currentMoveInterval)
             {
                 Move();
                 _moveTimer = 0f;
@@ -94,6 +98,7 @@ class PacMan : GameObject
     {
         if (tile.HasFlag(Tile.Pellet)) // 펠렛
         {
+            currentMoveInterval = k_EatingMoveInterval;
             MapManager.MapTile[Position.y, Position.x] &= ~Tile.Pellet;
             GameScene.score += 10;
             GameScene.PelletCount++;
@@ -102,6 +107,7 @@ class PacMan : GameObject
 
         else if (tile.HasFlag(Tile.PowerPellet)) // 파워 펠렛
         {
+            currentMoveInterval = k_EatingMoveInterval;
             MapManager.MapTile[Position.y, Position.x] &= ~Tile.PowerPellet;
             GameScene.score += 50;
             GameScene.PelletCount++;
@@ -109,6 +115,11 @@ class PacMan : GameObject
 
             GameScene.fightenedModeTimer = 0;
             AtePowerPellet = true;
+        }
+
+        else
+        {
+            currentMoveInterval = k_MoveInterval;
         }
     }
 
@@ -132,7 +143,7 @@ class PacMan : GameObject
                         break;
                 }*/
 
-        var print = "팩";
+        var print = "나";
         var color = ConsoleColor.Yellow;
 
         if (GameScene.isStarted && !GameScene.isRunning)

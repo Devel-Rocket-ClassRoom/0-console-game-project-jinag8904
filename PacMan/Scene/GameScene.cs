@@ -5,7 +5,7 @@ using System.Collections.Generic;
 class GameScene : Scene
 {
     public static int score;
-    public static string scoreText = "00";
+    public static string scoreText = "0";
     public static int PelletCount;
 
     public static int ghostCapturedCount = 0;
@@ -41,7 +41,7 @@ class GameScene : Scene
     {
         score = 0;
         scoreText = "00";
-        PelletCount = 0;
+        PelletCount = 244;
         
         ghostCapturedCount = 0;
 
@@ -84,12 +84,20 @@ class GameScene : Scene
 
     public override void Update(float deltaTime)
     {
+        PacManGame.highScore = PacManGame.highScore > score ? PacManGame.highScore : score;
+
         if (isStarted)
         {
-            if (isGameOver || PelletCount == 244)
+            if (isGameOver || PelletCount == 0)
             {
                 if (Input.IsKeyDown(ConsoleKey.Enter)) PlayAgainRequested?.Invoke();
                 return;
+            }
+
+            if (PelletCount <= 20)
+            {
+                if (PelletCount <= 10) redGhost.currentMoveInterval = 0.11f;
+                if (PelletCount <= 20) redGhost.currentMoveInterval = 0.12f;
             }
 
             if (pacMan.AtePowerPellet)
@@ -203,8 +211,11 @@ class GameScene : Scene
     {
         DrawGameObjects(buffer);
 
-        buffer.WriteTextCentered(0, $"SCORE", ConsoleColor.Gray);
-        buffer.WriteTextCentered(1, $"{scoreText}", ConsoleColor.Gray);
+        buffer.WriteText(6, 0, "SCORE", ConsoleColor.Gray);
+        buffer.WriteTextCentered(0, $"HIGH SCORE", ConsoleColor.Gray);
+
+        buffer.WriteText(6, 1, $"{score, -4}", ConsoleColor.Gray);
+        buffer.WriteTextCentered(1, $"{PacManGame.highScore, -4}", ConsoleColor.Gray);
 
         if (isGameOver)
         {
@@ -212,9 +223,9 @@ class GameScene : Scene
             buffer.WriteTextCentered(17, "Press ENTER to Retry", ConsoleColor.White);
         }
 
-        else if (PelletCount == 244)
+        else if (PelletCount == 0)
         {
-            buffer.WriteTextCentered(15, "GAME CLEAR", ConsoleColor.Yellow);
+            buffer.WriteTextCentered(15, "GAME CLEAR!", ConsoleColor.Yellow);
             buffer.WriteTextCentered(17, "Press ENTER to Retry", ConsoleColor.White);
         }
 

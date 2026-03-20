@@ -28,8 +28,8 @@ class MintGhost : Ghost
         int targetX = redPos.x + (diffX * 2);
         int targetY = redPos.y + (diffY * 2);
 
-        targetPos.x = Math.Clamp(targetX, 0, 27);   // 보정
-        targetPos.y = Math.Clamp(targetY, 0, 30);
+        targetPos.x = Math.Clamp(targetX, 1, 26);   // 보정
+        targetPos.y = Math.Clamp(targetY, 1, 29);
 
         base.SetNextMove(pacManPos, pacManDir);
     }

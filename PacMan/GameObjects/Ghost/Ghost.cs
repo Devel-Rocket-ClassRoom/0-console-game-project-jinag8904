@@ -6,21 +6,21 @@ abstract class Ghost : GameObject
     protected BFSHelper bfs = new();
     protected Random rand = new();
 
-    public (int x, int y)[] directions = { (0, -1), (-1, 0), (0, 1), (1, 0) };
+    private (int x, int y)[] directions = { (0, -1), (-1, 0), (0, 1), (1, 0) };
 
     public (int x, int y) Position;
     protected (int x, int y) homePos;
-    protected (int x, int y) targetPos;
+    public (int x, int y) targetPos;
 
-    protected const float k_MoveInterval = 0.1f;
-    protected const float k_FrightenedMoveInterval = 0.2f;
-    protected const float k_GoingHomeMoveInterval = 0.03f;
-    protected float currentMoveInterval;
+    protected const float k_MoveInterval = 0.13f;
+    protected const float k_FrightenedMoveInterval = 0.25f;
+    protected const float k_GoingHomeMoveInterval = 0.05f;
+    public float currentMoveInterval;
 
     protected const float k_FrightenedDuration = 10f;
     protected float waitingDuration;
 
-    protected (int x, int y) _nextDirection;
+    public (int x, int y) _nextDirection;
     
     protected float _moveTimer;
     protected float _frightenedTimer;
@@ -53,7 +53,12 @@ abstract class Ghost : GameObject
         GameScene.OffFrightenedMode += FrightenedOff;
 
         frightenedColor = ConsoleColor.Blue;
-        frightenedDest = (rand.Next(0, 28), rand.Next(31));
+
+        while (true)
+        {
+            frightenedDest = (rand.Next(1, 26), rand.Next(1, 29));
+            if ((MapManager.MapTile[frightenedDest.y, frightenedDest.x] & Tile.Wall | Tile.Empty) == 0) break;
+        }
 
         justCaptured = false;
     }
@@ -121,8 +126,11 @@ abstract class Ghost : GameObject
         {
             if (Position == frightenedDest)
             {
-                frightenedDest.x = rand.Next(0, 28);
-                frightenedDest.y = rand.Next(0, 31);
+                while (true)
+                {
+                    frightenedDest = (rand.Next(1, 26), rand.Next(1, 29));
+                    if ((MapManager.MapTile[frightenedDest.y, frightenedDest.x] & Tile.Wall | Tile.Empty) == 0) break;   // 목적지가 벽이 아닐 때 while문 break;
+                }
             }
 
             targetPos = frightenedDest;
@@ -135,7 +143,7 @@ abstract class Ghost : GameObject
     protected (int x, int y) GetBestDir((int x, int y) targetPos)
     {
         int minDistance = int.MaxValue;
-        (int dx, int dy) bestDir = (1, 0);
+        (int dx, int dy) bestDir = _nextDirection;  // 기본값은 현 방향
 
         foreach (var dir in directions)
         {
@@ -193,7 +201,7 @@ abstract class Ghost : GameObject
 
         if (frightened)
         {
-            c = '꺅';
+            c = '런';
             color = frightenedColor;
         }
 
@@ -205,7 +213,7 @@ abstract class Ghost : GameObject
             }
             else
             {
-                c = '으';
+                c = '망';
                 color = ConsoleColor.White;
             }
         }
