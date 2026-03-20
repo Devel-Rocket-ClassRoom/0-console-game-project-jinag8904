@@ -51,8 +51,16 @@ class GameScene : Scene
         pinkGhost = new PinkGhost(this);
         AddGameObject(pinkGhost);
 
+        //mintGhost = new MintGhost(this);
+        //AddGameObject(mintGhost);
+
+        //orangeGhost = new OrangeGhost(this);
+        //AddGameObject(orangeGhost);
+
         ghosts.Add(redGhost);
         ghosts.Add(pinkGhost);
+        //ghosts.Add(mintGhost);
+        //ghosts.Add(orangeGhost);
     }
 
     public override void Unload()

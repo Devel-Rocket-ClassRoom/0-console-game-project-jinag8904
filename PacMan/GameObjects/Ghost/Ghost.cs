@@ -12,24 +12,25 @@ abstract class Ghost : GameObject
     protected (int x, int y) homePos;
     protected (int x, int y) targetPos;
 
-    protected const float k_MoveInterval = 0.3f;
-    protected const float k_FrightenedMoveInterval = 0.5f;
-    protected const float k_GoingHomeMoveInterval = 0.1f;
+    protected const float k_MoveInterval = 0.15f;
+    protected const float k_FrightenedMoveInterval = 0.3f;
+    protected const float k_GoingHomeMoveInterval = 0.05f;
     protected float currentMoveInterval;
 
-    protected const float k_FrightenedDuration = 10f;    
+    protected const float k_FrightenedDuration = 10f;
+    protected float waitingDuration = 0;
 
     protected (int x, int y) _nextDirection;
     
     protected float _moveTimer;
     protected float _frightenedTimer;
+    protected float _waitingTimer;
 
     protected ConsoleColor basicColor;
     protected char basicPrint = '유';
 
     public bool frightened;
     public bool goingHome;
-
 
     protected Ghost(Scene scene) : base(scene)
     {
@@ -47,18 +48,23 @@ abstract class Ghost : GameObject
         SetNextMove(PacMan.Position, PacMan.direction);
 
         _moveTimer += deltaTime;
-        if (frightened) _frightenedTimer += deltaTime;
-
-        if (_moveTimer > currentMoveInterval)
+        if (_waitingTimer < waitingDuration) _waitingTimer += deltaTime;    // 대기
+        
+        else
         {
-            Move();
-            _moveTimer = 0f;
-        }
+            if (frightened) _frightenedTimer += deltaTime;
 
-        if (_frightenedTimer > k_FrightenedDuration)
-        {
-            FrightenedOff();
-            _frightenedTimer = 0f;
+            if (_moveTimer > currentMoveInterval)
+            {
+                Move();
+                _moveTimer = 0f;
+            }
+
+            if (_frightenedTimer > k_FrightenedDuration)
+            {
+                FrightenedOff();
+                _frightenedTimer = 0f;
+            }
         }
     }
 
@@ -69,8 +75,8 @@ abstract class Ghost : GameObject
             if (Position == homePos)
             {
                 goingHome = false;
-                frightened = false;
-                _frightenedTimer = 0;
+                FrightenedOff();
+                _frightenedTimer = 0f;
                 currentMoveInterval = k_MoveInterval;
             }
 
@@ -147,19 +153,6 @@ abstract class Ghost : GameObject
     {
         // frightened 모드 끝나기 3초 전 깜빡깜빡 효과 필요
 
-        ///*    if (_frightenedTimer > 7)
-        //    {
-        //        switch (_color)
-        //        {
-        //            case ConsoleColor.Blue:
-        //                _color = ConsoleColor.White;
-        //                break;
-        //            case ConsoleColor.White:
-        //                _color = ConsoleColor.Blue;
-        //                break;
-        //        }
-        //    }*/
-
         var c = basicPrint;
         var color = basicColor;
 
@@ -171,7 +164,7 @@ abstract class Ghost : GameObject
 
         if (goingHome)
         {
-            c = '·';
+            c = '으';
             color = ConsoleColor.White;
         }
 

@@ -5,7 +5,7 @@ class PacMan : GameObject
 {
     public static (int x, int y) Position;
 
-    private const float k_MoveInterval = 0.4f;
+    private const float k_MoveInterval = 0.17f;
     public static (int x, int y) direction;
     private (int x, int y) _nextDirection;
     private float _moveTimer;

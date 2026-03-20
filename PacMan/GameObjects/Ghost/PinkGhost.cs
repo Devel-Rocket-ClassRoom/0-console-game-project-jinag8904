@@ -9,12 +9,17 @@ class PinkGhost : Ghost
         Position = (14, 14);
         homePos = (14, 14);
         basicColor = ConsoleColor.Magenta;
-        MapManager.MapTile[14, 14] |= Tile.RedGhost;
+        MapManager.MapTile[14, 14] |= Tile.PinkGhost;
     }
 
     public override void SetNextMove((int x, int y) pacManPos, (int x, int y) pacManDir)   // 경로 탐색, 방향 설정 (팩맨 위치 변할 때마다 재설정)
     {
-        targetPos = (pacManPos.x + 4 * pacManDir.x, pacManPos.y + 4 * pacManDir.y);  // 기본 설정
+        int targetX = pacManPos.x + (pacManDir.x * 4);
+        int targetY = pacManPos.y + (pacManDir.y * 4);
+
+        targetPos.x = Math.Clamp(targetX, 0, 27);   // 보정
+        targetPos.y = Math.Clamp(targetY, 0, 30);
+
         base.SetNextMove(pacManPos, pacManDir);
     }
 
