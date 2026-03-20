@@ -88,9 +88,6 @@ class GameScene : Scene
                 return;
             }
 
-            // mintGhost는 redGhost의 위치를 전달받는다
-            mintGhost.UpdateRedPos(redGhost.Position);
-
             if (pacMan.AtePowerPellet)
             {
                 pacMan.AtePowerPellet = false;
@@ -111,6 +108,8 @@ class GameScene : Scene
                 }
             }
 
+            // mintGhost는 redGhost의 위치를 전달받는다
+            mintGhost.UpdateRedPos(redGhost.Position);
             UpdateGameObjects(deltaTime);
 
             if (!pacMan.Alive)

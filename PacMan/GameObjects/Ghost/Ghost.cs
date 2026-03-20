@@ -114,7 +114,7 @@ abstract class Ghost : GameObject
             targetPos.y = rand.Next(0, 31);
         }
 
-        // 적용
+        // 목적지 적용
         _nextDirection = GetBestDir(targetPos);
     }
 
@@ -157,12 +157,12 @@ abstract class Ghost : GameObject
         _blinkingTimer = 0;
         frightened = true;
         currentMoveInterval = k_FrightenedMoveInterval;
+        frightenedColor = ConsoleColor.Blue;
     }
     public virtual void FrightenedOff()
     {
         frightened = false;
         currentMoveInterval = k_MoveInterval;
-        frightenedColor = ConsoleColor.Blue;
     }
 
     public virtual void GoingHomeOn()
