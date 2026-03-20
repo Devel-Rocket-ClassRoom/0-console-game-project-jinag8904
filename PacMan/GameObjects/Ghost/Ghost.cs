@@ -36,6 +36,8 @@ abstract class Ghost : GameObject
     private float _blinkingTimer;
     private ConsoleColor frightenedColor;
 
+    protected (int x, int y) frightenedDest;
+
     protected Ghost(Scene scene) : base(scene)
     {
         frightened = false;
@@ -49,6 +51,8 @@ abstract class Ghost : GameObject
         GameScene.OffFrightenedMode += FrightenedOff;
 
         frightenedColor = ConsoleColor.Blue;
+
+        frightenedDest = (rand.Next(0, 28), rand.Next(31));
     }
 
     public override void Update(float deltaTime)
@@ -106,12 +110,16 @@ abstract class Ghost : GameObject
             }
         }
 
-        // frightened인 경우에는 랜덤으로 움직임
+        // frightened인 경우에는 랜덤으로 움직임 (목적지 도착 시 변경)
         else if (frightened)
         {
-            // targetPos는 랜덤(...인데 개선 필요할듯)
-            targetPos.x = rand.Next(0, 28);
-            targetPos.y = rand.Next(0, 31);
+            if (Position == frightenedDest)
+            {
+                frightenedDest.x = rand.Next(0, 28);
+                frightenedDest.y = rand.Next(0, 31);
+            }
+
+            targetPos = frightenedDest;
         }
 
         // 목적지 적용
@@ -155,6 +163,7 @@ abstract class Ghost : GameObject
     {
         _frightenedTimer = 0;
         _blinkingTimer = 0;
+
         frightened = true;
         currentMoveInterval = k_FrightenedMoveInterval;
         frightenedColor = ConsoleColor.Blue;
