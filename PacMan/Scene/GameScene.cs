@@ -105,6 +105,9 @@ class GameScene : Scene
                 pacMan.AtePowerPellet = false;
                 powerEventOn = true;
 
+                fightenedModeTimer = 0;
+                ghostCapturedCount = 0;
+
                 OnFrightenedMode?.Invoke();
             }
 
@@ -151,6 +154,7 @@ class GameScene : Scene
                             waitingTimer = 0;
                             isRunning = false;
                             ghostCapturedCount++;
+                            Console.Beep(1000, 200);
                             ghost.GoingHomeOn();
                             ghost.justCaptured = true;
                             justCapturedGhost = ghost;
@@ -231,7 +235,7 @@ class GameScene : Scene
 
         else if (!isStarted)
         {
-            buffer.WriteTextCentered(20, "READY!", ConsoleColor.Yellow);
+            buffer.WriteTextCentered(17, "READY!", ConsoleColor.Yellow);
         }
     }
 }
