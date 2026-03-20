@@ -88,115 +88,118 @@ class GameScene : Scene
 
         if (isStarted)
         {
-            if (isGameOver || PelletCount == 0)
+            if (isGameOver || PelletCount == 0) // 게임이 끝났을 때
             {
                 if (Input.IsKeyDown(ConsoleKey.Enter)) PlayAgainRequested?.Invoke();
                 return;
             }
 
-            if (PelletCount <= 20)
+            else if (PelletCount <= 20)
             {
                 if (PelletCount <= 10) redGhost.currentMoveInterval = 0.11f;
                 if (PelletCount <= 20) redGhost.currentMoveInterval = 0.12f;
             }
 
-            if (pacMan.AtePowerPellet)
-            {
-                pacMan.AtePowerPellet = false;
-                powerEventOn = true;
-
-                fightenedModeTimer = 0;
-                ghostCapturedCount = 0;
-
-                OnFrightenedMode?.Invoke();
-            }
-
-            if (powerEventOn)
-            {
-                fightenedModeTimer += deltaTime;
-
-                if (fightenedModeTimer > k_FrightenedModeDuration)
-                {
-                    OffFrightenedMode?.Invoke();
-                    powerEventOn = false;
-                    ghostCapturedCount = 0;
-                }
-            }
-
-            // mintGhost는 redGhost의 위치를 전달받는다
-            mintGhost.UpdateRedPos(redGhost.Position);
-            UpdateGameObjects(deltaTime);
-
-            if (!pacMan.Alive)
-            {
-                isGameOver = true;
-                return;
-            }
-
-            if (isRunning)
-            {
-                Tile tile = MapManager.MapTile[PacMan.Position.y, PacMan.Position.x];
-
-                if ((tile & (Tile.RedGhost | Tile.PinkGhost | Tile.OrangeGhost | Tile.MintGhost)) != 0)
-                {
-                    List<Ghost> hitGhosts = new();
-
-                    if ((tile & Tile.RedGhost) != 0) hitGhosts.Add(ghosts[0]);
-                    if ((tile & Tile.PinkGhost) != 0) hitGhosts.Add(ghosts[1]);
-                    if ((tile & Tile.MintGhost) != 0) hitGhosts.Add(ghosts[2]);
-                    if ((tile & Tile.OrangeGhost) != 0) hitGhosts.Add(ghosts[3]);
-
-                    foreach (Ghost ghost in hitGhosts)
-                    {
-                        if (!ghost.frightened) isGameOver = true;
-                        else if (!ghost.goingHome)
-                        {
-                            waitingTimer = 0;
-                            isRunning = false;
-                            ghostCapturedCount++;
-                            Console.Beep(1000, 200);
-                            ghost.GoingHomeOn();
-                            ghost.justCaptured = true;
-                            justCapturedGhost = ghost;
-                        }
-
-                        switch (ghostCapturedCount)
-                        {
-                            // ０１２３４５６７８９
-                            case 1:
-                                score += 200;
-                                pacMan.scorePrint = "２００";
-                                break;
-                            case 2:
-                                score += 400;
-                                pacMan.scorePrint = "４００";
-                                break;
-                            case 3:
-                                score += 800;
-                                pacMan.scorePrint = "８００";
-                                break;
-                            case 4:
-                                score += 1600;
-                                pacMan.scorePrint = "１６００";
-                                break;
-                        }
-
-                        scoreText = score.ToString();
-                    }
-                }
-            }
-
-            else if (waitingTimer < 2)
-            {
-                waitingTimer += deltaTime;
-            }
-
             else
             {
-                justCapturedGhost.justCaptured = false;
-                justCapturedGhost = null;
-                isRunning = true;
-            }
+                if (pacMan.AtePowerPellet)
+                {
+                    pacMan.AtePowerPellet = false;
+                    powerEventOn = true;
+
+                    fightenedModeTimer = 0;
+                    ghostCapturedCount = 0;
+
+                    OnFrightenedMode?.Invoke();
+                }
+
+                if (powerEventOn)
+                {
+                    fightenedModeTimer += deltaTime;
+
+                    if (fightenedModeTimer > k_FrightenedModeDuration)
+                    {
+                        OffFrightenedMode?.Invoke();
+                        powerEventOn = false;
+                        ghostCapturedCount = 0;
+                    }
+                }
+
+                // mintGhost는 redGhost의 위치를 전달받는다
+                mintGhost.UpdateRedPos(redGhost.Position);
+                UpdateGameObjects(deltaTime);
+
+                if (!pacMan.Alive)
+                {
+                    isGameOver = true;
+                    return;
+                }
+
+                if (isRunning)
+                {
+                    Tile tile = MapManager.MapTile[PacMan.Position.y, PacMan.Position.x];
+
+                    if ((tile & (Tile.RedGhost | Tile.PinkGhost | Tile.OrangeGhost | Tile.MintGhost)) != 0)
+                    {
+                        List<Ghost> hitGhosts = new();
+
+                        if ((tile & Tile.RedGhost) != 0) hitGhosts.Add(ghosts[0]);
+                        if ((tile & Tile.PinkGhost) != 0) hitGhosts.Add(ghosts[1]);
+                        if ((tile & Tile.MintGhost) != 0) hitGhosts.Add(ghosts[2]);
+                        if ((tile & Tile.OrangeGhost) != 0) hitGhosts.Add(ghosts[3]);
+
+                        foreach (Ghost ghost in hitGhosts)
+                        {
+                            if (!ghost.frightened) isGameOver = true;
+                            else if (!ghost.goingHome)
+                            {
+                                waitingTimer = 0;
+                                isRunning = false;
+                                ghostCapturedCount++;
+                                Console.Beep(1000, 200);
+                                ghost.GoingHomeOn();
+                                ghost.justCaptured = true;
+                                justCapturedGhost = ghost;
+                            }
+
+                            switch (ghostCapturedCount)
+                            {
+                                // ０１２３４５６７８９
+                                case 1:
+                                    score += 200;
+                                    pacMan.scorePrint = "２００";
+                                    break;
+                                case 2:
+                                    score += 400;
+                                    pacMan.scorePrint = "４００";
+                                    break;
+                                case 3:
+                                    score += 800;
+                                    pacMan.scorePrint = "８００";
+                                    break;
+                                case 4:
+                                    score += 1600;
+                                    pacMan.scorePrint = "１６００";
+                                    break;
+                            }
+
+                            scoreText = score.ToString();
+                        }
+                    }
+                }
+
+                else if (waitingTimer < 2)
+                {
+                    waitingTimer += deltaTime;
+                }
+
+                else
+                {
+                    justCapturedGhost.justCaptured = false;
+                    justCapturedGhost = null;
+                    isRunning = true;
+                }
+            }            
         }
 
         else if (waitingTimer < k_WaitingTime)
