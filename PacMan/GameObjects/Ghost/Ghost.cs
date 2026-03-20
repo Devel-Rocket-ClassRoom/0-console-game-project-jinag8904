@@ -1,17 +1,18 @@
 ﻿using Framework.Engine;
 using System;
 
-class Ghost : GameObject
+abstract class Ghost : GameObject
 {
-    // readonly BFSHelper BFSHelper = new();
+    protected BFSHelper bfs = new();
+    protected Random rand = new();
 
-    public (int x, int y)[] directions = { (0, -1), (0, 1), (-1, 0), (1, 0) };
+    public (int x, int y)[] directions = { (0, -1), (-1, 0), (0, 1), (1, 0) };
 
     public (int x, int y) Position;
 
     protected const float k_MoveInterval = 0.3f;
     protected const float k_FrightenedMoveInterval = 0.5f;
-    protected const float k_GoingHomeMoveInterval = 0.2f;
+    protected const float k_GoingHomeMoveInterval = 0.1f;
     protected float currentMoveInterval;
 
     protected const float k_FrightenedDuration = 10f;    
@@ -28,13 +29,19 @@ class Ghost : GameObject
 
     protected Ghost(Scene scene) : base(scene)
     {
+        frightened = false;
+        goingHome = false;
+
         currentMoveInterval = k_MoveInterval;
+
+        GameScene.OnFrightenedMode += FrightenedOn;
+        GameScene.OffFrightenedMode += FrightenedOff;
     }
 
     public override void Update(float deltaTime)
     {
         _moveTimer += deltaTime;
-        _frightenedTimer += deltaTime;
+        if (frightened) _frightenedTimer += deltaTime;
 
         if (_moveTimer > currentMoveInterval)
         {

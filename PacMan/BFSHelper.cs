@@ -4,37 +4,52 @@ using System.Collections.Generic;
 
 class BFSHelper
 {
-    private int[,] BFSMap;
-    private Queue<(int x, int y)> BFSQueue;
-    // 방문한 노드
+    private bool[,] visited = new bool[31, 28];   // 방문 체크
+    private Queue<(int x, int y, int dist)> BFSqueue;   // 좌표 (x, y), 시작점으로부터의 거리
 
-    private (int x, int y)[] directions = { (1, 0), (-1, 0), (0, 1), (0, -1) };
+    private (int x, int y)[] directions = { (0, -1), (-1, 0), (0, 1), (1, 0) };
 
     public BFSHelper()
     {
-        for (int y = 0; y < 31; y++)
-        {
-            for (int x = 0; x < 28; x++)
-            {
-                char tile = MapManager.MapBase[y][x];
+        BFSqueue = new();
+    }
 
-                BFSMap[y, x] = tile switch
+    public int getDist((int x, int y) startPos, (int x, int y) targetPos)
+    {
+        BFSqueue.Clear();   // 초기화
+        visited = new bool[31, 28];
+
+        //1. 큐(Queue)에 시작 좌표 넣기
+        BFSqueue.Enqueue((startPos.x, startPos.y, 0));
+        visited[startPos.y, startPos.x] = true;
+
+        //2. While(큐에 데이터가 있는 동안) 루프 돌리기
+        while (BFSqueue.Count > 0)
+        {
+            var current = BFSqueue.Dequeue();
+
+            if ((current.x, current.y) == (targetPos.x, targetPos.y)) // 큐에서 꺼낸 좌표가 타겟의 좌표와 같으면 거리 반환
+            {
+                return current.dist;
+            }
+
+            foreach (var dir in directions) // 3. 상하좌우 검사
+            {
+                var tPos = (x: current.x + dir.x, y: current.y + dir.y);    // 검사할 위치
+
+                if ((tPos.x < 0 || 27 < tPos.x || tPos.y < 0 || 30 < tPos.y) || // 범위 밖
+                    visited[tPos.y, tPos.x] ||                                  // 방문한 타일
+                    (MapManager.MapTile[tPos.y, tPos.x] & Tile.Wall) != 0)      // 벽
                 {
-                    '#' => 1,
-                    _ => 0
-                };
+                    continue;
+                }
+
+                // 4. 앞 조건에서 걸리지 않았으면 방문 표시, 큐에 값 삽입 (거리 1 증가)
+                visited[tPos.y, tPos.x] = true;
+                BFSqueue.Enqueue((tPos.x, tPos.y, current.dist +1));
             }
         }
+
+        return 999;
     }
-    
-    //1. a 노드(시작 노드)를 방문한다. (방문한 노드 체크)
-    //- 큐에 방문된 노드를 삽입(enqueue)한다.
-    //- 초기 상태의 큐에는 시작 노드만이 저장
-    //    - 즉, a 노드의 이웃 노드를 모두 방문한 다음에 이웃의 이웃들을 방문한다.
-    //2. 큐에서 꺼낸 노드과 인접한 노드들을 모두 차례로 방문한다.
-    //- 큐에서 꺼낸 노드를 방문한다.
-    //- 큐에서 커낸 노드과 인접한 노드들을 모두 방문한다.
-    //    - 인접한 노드가 없다면 큐의 앞에서 노드를 꺼낸다(dequeue).
-    //- 큐에 방문된 노드를 삽입(enqueue)한다.
-    //3. 큐가 소진될 때까지 계속한다.
 }

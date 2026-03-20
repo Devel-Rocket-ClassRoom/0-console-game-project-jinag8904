@@ -1,20 +1,15 @@
 ﻿using Framework.Engine;
 using System;
 using System.Drawing;
+using static System.Net.Mime.MediaTypeNames;
 
 class RedGhost : Ghost
 {
     public RedGhost(Scene scene) : base(scene)
     {
         Name = "Red";
-        frightened = false;
-        goingHome = false;
-
         Position = (14, 11);
         MapManager.MapTile[11, 14] |= Tile.RedGhost;
-
-        GameScene.OnFrightenedMode += FrightenedOn;
-        GameScene.OffFrightenedMode += FrightenedOff;
     }
 
     public override void Update(float deltaTime)
@@ -31,45 +26,36 @@ class RedGhost : Ghost
         if (goingHome)
         {
             // 이미 집에 있으면 goingHome 해제, 속도 변경
+            if (Position == (14, 14))
+            {
+                goingHome = false;
+                frightened = false;
+                _frightenedTimer = 0;
+                currentMoveInterval = k_MoveInterval;
+            }
 
-            // 가는 도중이면... targetPos는 집
+            // 가는 도중이면... targetPos는 집 (14, 14)
+            else
+            {
+                targetPos = (14, 14);
+            }
         }
 
-        // frightened인 경우에는 팩맨으로부터 도망친다
+        // frightened인 경우에는 랜덤으로 움직임
         else if (frightened)
         {
-            // targetPos는 팩맨의 반대 방향?
+            // targetPos는 랜덤 (인데 개선 필요할듯)
+            targetPos.x = rand.Next(0, 28);
+            targetPos.y = rand.Next(0, 31);
         }
 
         else
         {
-            // 팩맨을 쫓는다
-            targetPos = pacManPos;
+            targetPos = pacManPos;  // 기본 타겟 (유령별로 다른 부분)
         }
 
-        double minDistance = double.MaxValue;
-        (int nextX, int nextY) bestMove = (Position.x, Position.y);
-
-        foreach (var dir in directions)
-        {
-            int testX = Position.x + dir.x;
-            int testY = Position.y + dir.y;
-
-            // 1. 벽 체크 (벽이 아닐 때만 후보로 등록)
-            if (!MapManager.MapTile[testY, testX].HasFlag(Tile.Wall) && !MapManager.MapTile[testY, testX].HasFlag(Tile.GhostHouse))
-            {
-                // 2. 타겟(팩맨)까지의 거리 계산 (피타고라스 정리: a^2 + b^2)
-                double dist = Math.Pow(targetPos.x - testX, 2) + Math.Pow(targetPos.y - testY, 2);
-
-                if (dist < minDistance)
-                {
-                    minDistance = dist;
-                    bestMove = (testX, testY);
-                }
-            }
-        }
-
-        _nextDirection = (bestMove.nextX - Position.x, bestMove.nextY - Position.y);
+        // 적용
+        _nextDirection = GetBestDir(targetPos);
     }
 
     public override void Move()
@@ -79,7 +65,12 @@ class RedGhost : Ghost
         MapManager.MapTile[Position.y, Position.x] |= Tile.RedGhost;  // 새 위치에 플래그 설정
     }
 
-    public override void FrightenedOn() => base.FrightenedOn();
+    public override void FrightenedOn()
+    {
+        base.FrightenedOn();
+        _nextDirection = (-_nextDirection.x, -_nextDirection.y); // 가다가 반대로 한 번 꺾음
+    }
+
     public override void FrightenedOff() => base.FrightenedOff();    
     public override void GoingHomeOn() => base.GoingHomeOn();
     
@@ -116,6 +107,31 @@ class RedGhost : Ghost
         }
 
         buffer.SetCell(Position.x + MapManager.Left, Position.y + MapManager.Top, c, color);
+    }
+
+    protected (int x, int y) GetBestDir((int x, int y) targetPos)
+    {
+        int minDistance = int.MaxValue;
+        (int dx, int dy) bestDir = (0, 0);
+
+        foreach (var dir in directions)
+        {
+            var nextX = Position.x + dir.x;
+            var nextY = Position.y + dir.y;
+
+            if (nextX < 0 || nextX > 27 || nextY < 0 || nextY > 30 ||
+            (MapManager.MapTile[nextY, nextX] & Tile.Wall) != 0) continue;
+
+            int distance = bfs.getDist((nextX, nextY), targetPos);
+
+            if (distance < minDistance)
+            {
+                minDistance = distance;
+                bestDir = dir;
+            }
+        }
+
+        return bestDir;
     }
 }
 
