@@ -18,7 +18,7 @@ abstract class Ghost : GameObject
     protected float currentMoveInterval;
 
     protected const float k_FrightenedDuration = 10f;
-    protected float waitingDuration = 0;
+    protected float waitingDuration;
 
     protected (int x, int y) _nextDirection;
     
@@ -38,6 +38,7 @@ abstract class Ghost : GameObject
         goingHome = false;
 
         currentMoveInterval = k_MoveInterval;
+        _moveTimer = currentMoveInterval;
 
         GameScene.OnFrightenedMode += FrightenedOn;
         GameScene.OffFrightenedMode += FrightenedOff;
@@ -133,9 +134,9 @@ abstract class Ghost : GameObject
 
     public virtual void FrightenedOn()
     {
+        _frightenedTimer = 0;
         frightened = true;
         currentMoveInterval = k_FrightenedMoveInterval;
-
     }
     public virtual void FrightenedOff()
     {

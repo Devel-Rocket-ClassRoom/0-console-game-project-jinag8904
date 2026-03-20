@@ -13,6 +13,10 @@ class GameScene : Scene
     private const float k_FrightenedModeDuration = 10f;
     public static float fightenedModeTimer;
 
+    private const float k_WaitingTime = 3f;
+    private static float waitingTimer;
+    public static bool isStarted;
+
     public static  bool isGameOver;
     public bool powerEventOn = false;
 
@@ -39,6 +43,8 @@ class GameScene : Scene
         ghostCapturedCount = 0;
 
         fightenedModeTimer = 0;
+        waitingTimer = 0;
+        isStarted = false;
 
         isGameOver = false;
         powerEventOn = false;
@@ -74,92 +80,95 @@ class GameScene : Scene
 
     public override void Update(float deltaTime)
     {
-        if (isGameOver)
+        if (isStarted)
         {
-            if (Input.IsKeyDown(ConsoleKey.Enter)) PlayAgainRequested?.Invoke();
-            return;
-        }
-
-        if (PelletCount == 244)
-        {
-            // 클리어 처리
-        }
-
-        // mintGhost는 redGhost의 위치를 전달받는다
-        mintGhost.UpdateRedPos(redGhost.Position);
-
-        if (pacMan.AtePowerPellet)
-        {
-            pacMan.AtePowerPellet = false;
-            powerEventOn = true;
-            OnFrightenedMode?.Invoke();
-        }
-
-        if (powerEventOn)
-        {
-            fightenedModeTimer += deltaTime;
-
-            if (fightenedModeTimer > k_FrightenedModeDuration)
+            if (isGameOver || PelletCount == 244)
             {
-                OffFrightenedMode?.Invoke();
-                powerEventOn = false;
-                ghostCapturedCount = 0;
-            }
-        }
-
-        UpdateGameObjects(deltaTime);
-
-        if (!pacMan.Alive)
-        {
-            isGameOver = true;
-            return;
-        }
-
-        Tile tile = MapManager.MapTile[PacMan.Position.y, PacMan.Position.x];
-
-        if ((tile & (Tile.RedGhost | Tile.PinkGhost | Tile.OrangeGhost | Tile.MintGhost)) != 0)
-        {
-            Ghost ghost;
-
-            if ((tile & Tile.RedGhost) != 0) ghost = ghosts[0];
-            else if ((tile & Tile.PinkGhost) != 0) ghost = ghosts[1];
-            else if ((tile & Tile.MintGhost) != 0) ghost = ghosts[2];
-            else ghost = ghosts[3];
-            
-            if (ghost.frightened && !ghost.goingHome)
-            {
-                ghostCapturedCount++;
-                ghost.GoingHomeOn();
+                if (Input.IsKeyDown(ConsoleKey.Enter)) PlayAgainRequested?.Invoke();
+                return;
             }
 
-            else if (ghost.goingHome)
+            // mintGhost는 redGhost의 위치를 전달받는다
+            mintGhost.UpdateRedPos(redGhost.Position);
+
+            if (pacMan.AtePowerPellet)
             {
-                // 아무것도 하지 않음
+                pacMan.AtePowerPellet = false;
+                powerEventOn = true;
+
+                OnFrightenedMode?.Invoke();
             }
 
-            else
+            if (powerEventOn)
+            {
+                fightenedModeTimer += deltaTime;
+
+                if (fightenedModeTimer > k_FrightenedModeDuration)
+                {
+                    OffFrightenedMode?.Invoke();
+                    powerEventOn = false;
+                    ghostCapturedCount = 0;
+                }
+            }
+
+            UpdateGameObjects(deltaTime);
+
+            if (!pacMan.Alive)
             {
                 isGameOver = true;
-            }
-        
-            switch (ghostCapturedCount)
-            {
-                case 1:
-                    score += 200;
-                    break;
-                case 2:
-                    score += 400;
-                    break;
-                case 3:
-                    score += 800;
-                    break;
-                case 4:
-                    score += 1600;
-                    break;
+                return;
             }
 
-            scoreText = score.ToString();
+            Tile tile = MapManager.MapTile[PacMan.Position.y, PacMan.Position.x];
+
+            if ((tile & (Tile.RedGhost | Tile.PinkGhost | Tile.OrangeGhost | Tile.MintGhost)) != 0)
+            {
+                List<Ghost> hitGhosts = new();
+
+                if ((tile & Tile.RedGhost) != 0) hitGhosts.Add(ghosts[0]);
+                if ((tile & Tile.PinkGhost) != 0) hitGhosts.Add(ghosts[1]);
+                if ((tile & Tile.MintGhost) != 0) hitGhosts.Add(ghosts[2]);
+                if ((tile & Tile.OrangeGhost) != 0) hitGhosts.Add(ghosts[3]);
+
+                foreach (Ghost ghost in hitGhosts)
+                {
+                    if (!ghost.frightened) isGameOver = true;
+                    else if (!ghost.goingHome)
+                    {
+                        ghostCapturedCount++;
+                        ghost.GoingHomeOn();
+                    }
+
+                    switch (ghostCapturedCount)
+                    {
+                        case 1:
+                            score += 200;
+                            break;
+                        case 2:
+                            score += 400;
+                            break;
+                        case 3:
+                            score += 800;
+                            break;
+                        case 4:
+                            score += 1600;
+                            break;
+                    }
+
+                    scoreText = score.ToString();
+                }
+            }
         }
+
+        else if (waitingTimer < k_WaitingTime)
+        {
+            waitingTimer += deltaTime;
+        }
+
+        else
+        {
+            isStarted = true;
+        }        
     }
 
     public override void Draw(ScreenBuffer buffer)
@@ -173,6 +182,17 @@ class GameScene : Scene
         {
             buffer.WriteTextCentered(15, "GAME OVER", ConsoleColor.Red);
             buffer.WriteTextCentered(17, "Press ENTER to Retry", ConsoleColor.White);
+        }
+
+        else if (PelletCount == 244)
+        {
+            buffer.WriteTextCentered(15, "GAME CLEAR", ConsoleColor.Yellow);
+            buffer.WriteTextCentered(17, "Press ENTER to Retry", ConsoleColor.White);
+        }
+
+        else if (!isStarted)
+        {
+            buffer.WriteTextCentered(20, "READY!", ConsoleColor.Yellow);
         }
     }
 }
