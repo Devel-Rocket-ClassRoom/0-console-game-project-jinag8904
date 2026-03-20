@@ -32,6 +32,10 @@ abstract class Ghost : GameObject
     public bool frightened;
     public bool goingHome;
 
+    private const float k_BlinkingInterval = 0.2f;
+    private float _blinkingTimer;
+    private ConsoleColor frightenedColor;
+
     protected Ghost(Scene scene) : base(scene)
     {
         frightened = false;
@@ -39,9 +43,12 @@ abstract class Ghost : GameObject
 
         currentMoveInterval = k_MoveInterval;
         _moveTimer = currentMoveInterval;
+        _blinkingTimer = 0;
 
         GameScene.OnFrightenedMode += FrightenedOn;
         GameScene.OffFrightenedMode += FrightenedOff;
+
+        frightenedColor = ConsoleColor.Blue;
     }
 
     public override void Update(float deltaTime)
@@ -49,6 +56,7 @@ abstract class Ghost : GameObject
         SetNextMove(PacMan.Position, PacMan.direction);
 
         _moveTimer += deltaTime;
+        _blinkingTimer += deltaTime;
 
         if (frightened) _frightenedTimer += deltaTime;
         if (_waitingTimer < waitingDuration) _waitingTimer += deltaTime;    // 대기
@@ -65,6 +73,17 @@ abstract class Ghost : GameObject
             {
                 FrightenedOff();
                 _frightenedTimer = 0f;
+            }
+
+            if (_blinkingTimer > k_BlinkingInterval)
+            {
+                _blinkingTimer = 0f;
+
+                // frightened 모드 끝나기 3초 전 깜빡깜빡 효과
+                if (frightened && _frightenedTimer > k_FrightenedDuration - 3)
+                {
+                    frightenedColor = frightenedColor == ConsoleColor.Blue ? ConsoleColor.White : ConsoleColor.Blue;
+                }
             }
         }
     }
@@ -135,6 +154,7 @@ abstract class Ghost : GameObject
     public virtual void FrightenedOn()
     {
         _frightenedTimer = 0;
+        _blinkingTimer = 0;
         frightened = true;
         currentMoveInterval = k_FrightenedMoveInterval;
     }
@@ -142,6 +162,7 @@ abstract class Ghost : GameObject
     {
         frightened = false;
         currentMoveInterval = k_MoveInterval;
+        frightenedColor = ConsoleColor.Blue;
     }
 
     public virtual void GoingHomeOn()
@@ -152,15 +173,13 @@ abstract class Ghost : GameObject
 
     public override void Draw(ScreenBuffer buffer)
     {
-        // frightened 모드 끝나기 3초 전 깜빡깜빡 효과 필요
-
         var c = basicPrint;
         var color = basicColor;
 
         if (frightened)
         {
             c = '꺅';
-            color = ConsoleColor.Blue;
+            color = frightenedColor;
         }
 
         if (goingHome)
