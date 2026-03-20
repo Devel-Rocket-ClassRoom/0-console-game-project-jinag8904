@@ -113,7 +113,7 @@ class PacMan : GameObject
             MapManager.MapTile[Position.y, Position.x] &= ~Tile.PowerPellet;
             GameScene.score += 50;
             GameScene.PelletCount++;
-            Console.Beep(500, 50);
+            Console.Beep(1000, 200);
 
             GameScene.scoreText = GameScene.score.ToString();
 
