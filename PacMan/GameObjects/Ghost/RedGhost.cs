@@ -9,7 +9,7 @@ class RedGhost : Ghost
         Position = (13, 11);
         homePos = (13, 14);
         basicColor = ConsoleColor.Red;
-        MapManager.MapTile[11, 14] |= Tile.RedGhost;
+        MapManager.MapTile[11, 13] |= Tile.RedGhost;
     }
 
     public override void SetNextMove((int x, int y) pacManPos, (int x, int y) pacManDir)   // 경로 탐색, 방향 설정 (팩맨 위치 변할 때마다 재설정)
