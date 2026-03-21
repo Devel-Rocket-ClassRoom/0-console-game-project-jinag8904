@@ -101,8 +101,7 @@ class PacMan : GameObject
             currentMoveInterval = k_EatingMoveInterval;
             MapManager.MapTile[Position.y, Position.x] &= ~Tile.Pellet;
             GameScene.score += 10;
-            GameScene.PelletCount++;
-            Console.Beep(500, 50);
+            GameScene.PelletCount--;
 
             GameScene.scoreText = GameScene.score.ToString();
         }
@@ -112,8 +111,7 @@ class PacMan : GameObject
             currentMoveInterval = k_EatingMoveInterval;
             MapManager.MapTile[Position.y, Position.x] &= ~Tile.PowerPellet;
             GameScene.score += 50;
-            GameScene.PelletCount++;
-            Console.Beep(1000, 200);
+            GameScene.PelletCount--;
 
             GameScene.scoreText = GameScene.score.ToString();
 

@@ -156,7 +156,6 @@ class GameScene : Scene
                                 waitingTimer = 0;
                                 isRunning = false;
                                 ghostCapturedCount++;
-                                Console.Beep(1000, 200);
                                 ghost.GoingHomeOn();
                                 ghost.justCaptured = true;
                                 justCapturedGhost = ghost;
