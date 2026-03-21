@@ -27,7 +27,7 @@ abstract class Ghost : GameObject
     protected float _waitingTimer;
 
     protected ConsoleColor basicColor;
-    protected char basicPrint = '유';
+    protected char basicPrint = '적';
 
     public bool frightened;
     public bool goingHome;
@@ -220,7 +220,6 @@ abstract class Ghost : GameObject
 
         if (frightened)
         {
-            c = '튀';
             color = frightenedColor;
         }
 
@@ -233,7 +232,7 @@ abstract class Ghost : GameObject
 
             else
             {
-                c = '눈';
+                c = 'ㅠ';
                 color = ConsoleColor.White;
             }
         }

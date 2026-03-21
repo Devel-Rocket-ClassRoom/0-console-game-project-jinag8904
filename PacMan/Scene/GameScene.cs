@@ -94,14 +94,14 @@ class GameScene : Scene
                 return;
             }
 
-            else if (PelletCount <= 20)
-            {
-                if (PelletCount <= 10) redGhost.currentMoveInterval = 0.11f;
-                if (PelletCount <= 20) redGhost.currentMoveInterval = 0.12f;
-            }
-
             else
             {
+                if (PelletCount <= 20)
+                {
+                    if (PelletCount <= 10) redGhost.currentMoveInterval = 0.11f;
+                    if (PelletCount <= 20) redGhost.currentMoveInterval = 0.12f;
+                }
+
                 if (pacMan.AtePowerPellet)
                 {
                     pacMan.AtePowerPellet = false;
@@ -222,6 +222,8 @@ class GameScene : Scene
 
         buffer.WriteText(6, 1, $"{score, -4}", ConsoleColor.Gray);
         buffer.WriteTextCentered(1, $"{PacManGame.highScore, -4}", ConsoleColor.Gray);
+
+        buffer.WriteText(6, 2, $"{PelletCount}", ConsoleColor.Gray);
 
         if (isGameOver)
         {
