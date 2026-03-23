@@ -40,7 +40,7 @@ class BFSHelper
                 if (tPos.x < 0) tPos.x = 27;
                 else if (tPos.x > 27) tPos.x = 0;
 
-                if ((tPos.x < 0 || 27 < tPos.x || tPos.y < 0 || 30 < tPos.y) || // 범위 밖
+                if (tPos.x < 0 || 27 < tPos.x || tPos.y < 0 || 30 < tPos.y || // 범위 밖
                     visited[tPos.y, tPos.x] ||                                  // 방문한 타일
                     (MapManager.MapTile[tPos.y, tPos.x] & Tile.Wall) != 0)      // 벽
                 {
