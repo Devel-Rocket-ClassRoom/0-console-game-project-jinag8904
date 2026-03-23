@@ -223,7 +223,7 @@ class GameScene : Scene
         buffer.WriteText(6, 1, $"{score, -4}", ConsoleColor.Gray);
         buffer.WriteTextCentered(1, $"{PacManGame.highScore, -4}", ConsoleColor.Gray);
 
-        buffer.WriteText(6, 2, $"{PelletCount}", ConsoleColor.Gray);
+        //buffer.WriteText(6, 2, $"{PelletCount}", ConsoleColor.Gray);
 
         if (isGameOver)
         {
