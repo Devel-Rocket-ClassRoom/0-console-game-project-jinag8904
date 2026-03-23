@@ -129,7 +129,7 @@ abstract class Ghost : GameObject
                 while (true)
                 {
                     frightenedDest = (rand.Next(1, 26), rand.Next(1, 29));
-                    if ((MapManager.MapTile[frightenedDest.y, frightenedDest.x] & Tile.Wall | Tile.Empty) == 0) break;   // 목적지가 벽이 아닐 때 while문 break;
+                    if ((MapManager.MapTile[frightenedDest.y, frightenedDest.x] & (Tile.Wall | Tile.Empty)) == 0) break;   // 목적지가 벽이 아닐 때 while문 break;
                 }
             }
 

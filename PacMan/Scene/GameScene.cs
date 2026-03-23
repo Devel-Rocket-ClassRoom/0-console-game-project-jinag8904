@@ -187,13 +187,14 @@ class GameScene : Scene
                     }
                 }
 
-                else if (waitingTimer < 2)
+                else if (waitingTimer < 2)  // 유령 캡쳐 후 2초 대기
                 {
                     waitingTimer += deltaTime;
                 }
 
                 else
                 {
+                    waitingTimer = 0;
                     justCapturedGhost.justCaptured = false;
                     justCapturedGhost = null;
                     isRunning = true;
@@ -201,7 +202,7 @@ class GameScene : Scene
             }            
         }
 
-        else if (waitingTimer < k_WaitingTime)
+        else if (waitingTimer < k_WaitingTime) // 게임 시작 전 대기
         {
             waitingTimer += deltaTime;
         }
